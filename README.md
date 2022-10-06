@@ -10,8 +10,16 @@ October 5th, 2022
 
     Also, feels good coming back to a single project setup. Although my mind is slightly scrambled having only barely learned some of this stuff, and then coming back to Pug and friends after dealing with React for the past week.
 
+October 6th, 2022
+
+    We'll see how much of the basic stuff I can get done in one day. I'd like to actually start with a basic layout this time. For my Blog API project I just added all the functionality first and styled after, with no plan as to where I was going with things. I think this led to most of layout issues.
+
+    Hey, I got multiple stylesheets working for the first time in my life, thanks to pug!
+
 
 ---To-Do---
 
 -user authentication
 -sign in with facebook
+-change session secret
+-fix collapsed panel gap

@@ -1,0 +1,84 @@
+:root {
+    --russian: #23022E;
+    --silver: #ADA8B6;
+    --spanish: #573280;
+}
+
+form {
+    background-color: var(--spanish);
+    padding: 10px;
+}
+
+form>h2 {
+    margin: 0;
+    width: 50vw;
+    max-width: 50vw;
+    
+}
+
+form input {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+#main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    background-color: var(--russian);
+
+    flex-grow: 1;
+}
+
+.form-inputs {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+}
+
+#icon-picker {
+    box-sizing: border-box;
+    background-color: var(--russian);
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+
+    max-width: 50vw;
+    padding: 10px;
+}
+
+#icon-picker>input {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    filter: opacity(0);
+}
+
+#icon-picker>label {
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+#icon-picker>label:hover {
+    background-color: var(--silver);
+}
+
+#icon-picker>input:checked + label {
+    background-color: lightcoral;
+    border-radius: 10px;
+}
+
+.icon-input {
+    height: 4rem;
+    width: 4rem;
+
+    background-color: white;
+    background-size: contain;
+    background-position: center;
+
+    image-rendering: pixelated;
+}

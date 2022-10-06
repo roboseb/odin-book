@@ -1,11 +1,61 @@
 extends layout
 
 block content
-    h1 Welcome to the website
+    #feed-panel.panel
+        .panel-header Feed
 
-    if user
-        h2 Thank you for signing in
-    else 
+        #post-form
+            if user
+                h2 New Post
+                form(method='POST' action='/posts/new')
+                    label(for='title') Title
+                    input(id='title' name='title' required)
+
+                    label(for='content') Content 
+                    input(id='content' name='content' required)
+
+                    button(type='submit') Submit
+            else 
+                div Please sign in to post
 
 
-        h2 Please sign in
+        #post-list.custom-scroll
+            each post, index in postlist
+
+                .post 
+                    .post-header 
+                        .pic(style=`background-image: url('images/icons/${post.pic}.png')`) test
+                        .post-title= post.title     
+                        .post-namedate-box
+                            .post-username= post.username 
+                            .post-date=processDate(post.postDate)
+
+                    .post-content= post.content
+
+                    .post-comments 
+                        form(method='POST' action='/comments/new')
+                            input(name='post' value=post._id hidden)
+                            label(for=`post-comment${index}`) Comment
+                            input(type='text' id=`post-comment${index}` name='comment' required)
+                            button(type='submit') Submit
+
+
+                        each comment in comment_list 
+                            if comment.post.equals(post._id)
+
+                                .comment=comment.comment
+
+
+
+
+    #side-panels
+
+        #friends-panel.panel 
+            .panel-header(onclick='togglePanel(this)') Friends
+            div dfsf
+        #profile-panel.panel
+            .panel-header(onclick='togglePanel(this)') Profile
+        #dice-panel.panel 
+            .panel-header(onclick='togglePanel(this)') Dice
+
+    script(src='/javascripts/script.js')

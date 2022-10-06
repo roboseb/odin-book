@@ -2,14 +2,24 @@ doctype html
 html
     head
         title= title
-        link(rel='stylesheet' href='/stylesheets/style.css')
+        link(rel='stylesheet' href=`/stylesheets/style.css`)
+        if sheet 
+            link(rel='stylesheet' href=`/stylesheets/${sheet}.css`)
         meta(charset='utf-8')
         meta(name='viewport' content='width=device-width, initial-scale=1')
     body
 
-
         #navbar 
             a(href='/') Home
-            a(href='/sign-up') Sign Up
 
-        block content
+
+            if user 
+                div= user.username
+                a(href='/sign-out') Sign Out
+
+            else 
+                a(href='/sign-up') Sign Up/Sign In
+                div Please sign in
+
+        #main-content
+            block content

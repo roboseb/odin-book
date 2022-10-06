@@ -1,26 +1,49 @@
+
+
 extends layout
 
+
+
 block content
+
     h1 Welcome to the sign up/sign in page
 
-    form(method='POST' action='')
-        label(for='username') Username
-        input(id='username' name='username' type='text')
+    form(method='POST' action='/sign-in')
+        h2 Sign In
+        .form-inputs
+            label(for='username') Username
+            input(id='username' name='username' type='text')
 
-        label(for='password') Password
-        input(id='password' name='password' type='password')
+            label(for='password') Password
+            input(id='password' name='password' type='password')
 
         button(type='submit') Submit
 
+        if message 
+            li=message
+
+
+    p.help-text Not a user yet? Sign up below! 
+
     form(method='POST' action='')
-        label(for='username-up') Username
-        input(id='username-up' name='username' type='text')
+        h2 Sign Up
+        .form-inputs
+            label(for='username-up') Username
+            input(id='username-up' name='username' type='text' value=`${user ? user.username : ''}` required)
 
-        label(for='password-up') Password
-        input(id='password-up' name='password' type='password')
+            label(for='password-up') Password
+            input(id='password-up' name='password' type='password')
 
-        label(for='password-confirm') Confirm Password
-        input(id='password-confirm' name='confirmPassword' type='password')
+            label(for='password-confirm') Confirm Password
+            input(id='password-confirm' name='confirmPassword' type='password')
+
+        #icon-picker
+            each val in [1, 2, 3, 4, 5, 6, 7, 8]
+                if val === 1
+                    input(type="radio" id=`icon${val}` name='pic' value=`${val}` checked)
+                else 
+                    input(type="radio" id=`icon${val}` name='pic' value=`${val}`)
+                label(for=`icon${val}` style=`background-image: url('images/icons/${val}.png')`).icon-input
 
         button(type='submit') Submit
 
@@ -29,5 +52,3 @@ block content
             ul.account-error 
                 each error in errors
                     li= error.msg
-
-        h2 Please sign in

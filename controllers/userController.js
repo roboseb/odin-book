@@ -28,6 +28,7 @@ exports.user_create_post = [
                 username: req.body.username,
                 password: req.body.password,
                 admin: false,
+                pic: req.body.pic,
                 dice: [],
                 cards: [],
                 cosmetics: [],
@@ -37,7 +38,7 @@ exports.user_create_post = [
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
 
-            res.render('sign-up', { title: 'Sign Up', user: tempUser, errors: errors.array() });
+            res.render('sign-up', { title: 'Sign Up', user: tempUser, errors: errors.array(), sheet: 'sign-up' });
             return;
         } else {
             // Data from form is valid.
@@ -55,6 +56,7 @@ exports.user_create_post = [
                             username: req.body.username,
                             password: hashedPassword,
                             admin: false,
+                            pic: req.body.pic,
                             dice: [],
                             cards: [],
                             cosmetics: [],
@@ -64,7 +66,7 @@ exports.user_create_post = [
                     // Save user.
                     user.save(function (err) {
                         if (err) { return next(err); }
-                        // Successful - redirect to new author record.
+                        // Successful - redirect to home page.
                         res.redirect('/');
                     });
                 }
@@ -74,18 +76,13 @@ exports.user_create_post = [
 ];
 
 // Handle signing user in on POST.
-exports.user_signin_post = passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/sign-in"
-});
-
 exports.user_signin_post = (req, res, next) => {
     passport.authenticate('local', function (err, user, info) {
         if (err) { return next(err) }
         if (!user) {
             // *** Display message without using flash option
             // re-render the login form with a message
-            return res.render('sign-in', { message: info.message })
+            return res.render('sign-up', { message: info.message, sheet: 'sign-up'})
         }
         req.logIn(user, function (err) {
             if (err) { return next(err); }
