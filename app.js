@@ -8,6 +8,15 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
 const bcrypt = require('bcryptjs');
+var bodyParser = require('body-parser')
+
+const formData = require('express-form-data');
+const os = require("os");
+
+const options = {
+    uploadDir: os.tmpdir(),
+    autoClean: true
+};
 
 const User = require('./models/user');
 
@@ -33,6 +42,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(formData.parse(options));
 
 passport.use(
     new LocalStrategy((username, password, done) => {

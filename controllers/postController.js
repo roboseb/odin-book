@@ -60,10 +60,13 @@ exports.new_post_post = [
 exports.posts_get = (req, res, next) => {
     async.parallel({
         post_list(callback) {
-            Post.find({}).sort({postDate: -1}).exec(callback); // Pass an empty object as match condition to find all documents of this collection
+            Post.find({}).sort({postDate: -1}).exec(callback);
         },
         comment_list(callback) {
-            Comment.find({}).sort({postDate: -1}).exec(callback); // Pass an empty object as match condition to find all documents of this collection
+            Comment.find({}).sort({postDate: -1}).exec(callback);
+        },
+        user_list(callback) {
+            User.find({}, callback);
         },
     },
         (err, results) => {
@@ -71,7 +74,7 @@ exports.posts_get = (req, res, next) => {
 
             if (err) return next(err);
 
-            res.render('index', { postlist: results.post_list, comment_list: results.comment_list, user: req.user})
+            res.render('index', { postlist: results.post_list, comment_list: results.comment_list, user_list: results.user_list, user: req.user})
         });
 };
 

@@ -16,6 +16,12 @@ October 6th, 2022
 
     Hey, I got multiple stylesheets working for the first time in my life, thanks to pug!
 
+October 7th, 2022
+
+    Please God, I just want to use a JS function in Pug outside of an onclick attribute. 
+
+    Last prayer didn't work. Please God, I just want express to parse data and not send me undefined.
+
 
 ---To-Do---
 
@@ -23,3 +29,7 @@ October 6th, 2022
 -sign in with facebook
 -change session secret
 -fix collapsed panel gap
+-prevent signing up with same username
+-finalize by cleaning up code
+-like button (only able to like others' posts + only one like?)
+-standalone profile page

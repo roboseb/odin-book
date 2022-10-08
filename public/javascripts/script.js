@@ -4,35 +4,44 @@ const togglePanel = (target) => {
     panel.classList.toggle('collapsed');
 }
 
-// Process a date Object to a nicer format.
-const processDate = (postDate) => {
-    const date = new Date();
-    let hours = postDate.getHours();
-    let minutes = postDate.getMinutes();
-    let am = true;
-    let recentDate = false;
-    if (postDate && date.toLocaleDateString("en-US") === post.postDate.toLocaleDateString("en-US")) {
-        recentDate = true;
-    }
-    if (recentDate)  {
-        if (hours > 11) {
-            am = false;
-            if (hours > 12) {
-                hours = hours - 12;
-            }
-        }
-        if (hours === 0) {
-            hours = 12;
-        }
+// Send friend request to passed user from logged in user.
+const addFriend = (user) => {
+    console.log(user);
+    sendData({ username: user.username }, '/friends/add');
 
-        if (minutes < 10) {
-            minutes = `0${minutes}`
-        }
+    // Update button's text to reflect friendship.
+    const friendBtn = document.getElementById('add-friend-btn');
+    const friendText = friendBtn.querySelector('.panel-header');
 
-        if (recentDate) {
-            return `Today at ${hours}:${minutes} ${am ? 'am' : 'pm'}`;
-        } else {
-            return postDate.toLocaleDateString("en-US");
-        }
+    if (friendText.innerText === 'Add Friend') {
+        friendText.innerText = 'Request Sent';
     }
+}
+
+// Send friend request to passed user from logged in user.
+const acceptFriend = (e, username) => {
+    console.log(username);
+    sendData({ username: username }, '/friends/accept');
+}
+
+// Send the data with data and action arguments.
+const sendData = (data, action) => {
+    const XHR = new XMLHttpRequest();
+    const FD = new FormData();
+
+    // Push our data into our FormData object
+    for (const [name, value] of Object.entries(data)) {
+        FD.append(name, value);
+    }
+
+    // Define what happens in case of error
+    XHR.addEventListener('error', (event) => {
+        console.log('Oops! Something went wrong.');
+    });
+
+    // Set up our request
+    XHR.open('POST', action);
+
+    // Send our FormData object; HTTP headers are set automatically
+    XHR.send(FD);
 }

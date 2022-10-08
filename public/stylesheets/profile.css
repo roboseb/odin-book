@@ -1,0 +1,76 @@
+:root {
+    --russian: #23022E;
+    --silver: #ADA8B6;
+    --spanish: #45236d;
+    --deep-spanish: #2a0e47;
+    --cerise: #d65676;
+    --cerise2: rgb(124, 22, 47);
+
+    --panel-height: 40px;
+}
+
+#main-content {
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: 1fr 4fr;
+}
+
+#profile-info {
+    grid-column: span 2;
+}
+
+#profile-info>.pic {
+    height: 100%;
+    width: 100%;
+
+    background-position: left;
+    background-color: transparent;
+
+    position: relative;
+}
+
+#profile-details {
+    position: absolute;
+    top: 0;
+    right: 10px;
+
+    height: 100%;
+
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+    column-gap: 20px;
+
+    justify-items: end;
+    align-items: center;
+}
+
+#profile-username {
+    font-size: 6rem;
+    grid-column: span 2;
+}
+
+#profile-join-date {
+    font-size: 3rem;
+}
+
+#profile-likes {
+    font-size: 3rem;
+}
+
+#add-friend-btn>.panel-header {
+    background-color: teal;
+    color: white;
+}
+
+#add-friend-btn>.panel-header:hover {
+    background-color: turquoise;
+    color: black;
+}
+
+.accept-request-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 100%;
+}

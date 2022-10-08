@@ -32,6 +32,11 @@ exports.user_create_post = [
                 dice: [],
                 cards: [],
                 cosmetics: [],
+                joinDate: new Date(),
+                likes: 0,
+                friends: [],
+                outgoingRequests: [],
+                incomingRequests: []
             }
         );
 
@@ -60,6 +65,11 @@ exports.user_create_post = [
                             dice: [],
                             cards: [],
                             cosmetics: [],
+                            joinDate: new Date(),
+                            likes: 0,
+                            friends: [],
+                            outgoingRequests: [],
+                            incomingRequests: []
                         }
                     );
 
@@ -82,7 +92,7 @@ exports.user_signin_post = (req, res, next) => {
         if (!user) {
             // *** Display message without using flash option
             // re-render the login form with a message
-            return res.render('sign-up', { message: info.message, sheet: 'sign-up'})
+            return res.render('sign-up', { message: info.message, sheet: 'sign-up' })
         }
         req.logIn(user, function (err) {
             if (err) { return next(err); }
@@ -91,10 +101,141 @@ exports.user_signin_post = (req, res, next) => {
     })(req, res, next);
 }
 
+// GET request for viewing a user's profile.
+exports.friend_request_send_post = (req, res, next) => {
+    async.parallel({
+        user_friended(callback) {
+            User.findOne({
+                username: req.user.username,
+                friends: req.body.username
+            }, callback);
+        },
+        user_requested(callback) {
+            User.findOne({
+                username: req.user.username,
+                outgoingRequests: req.body.username
+            }, callback);
+        },
+    },
+        (err, results) => {
+            console.log(req.body.username)
+
+            if (err) return next(err);
+
+            // User is already friends with other user.
+            if (results.user_friended !== null) {
+                console.log(`already friends with ${req.body.username}`)
+
+                // User has already sent friend request to other user.
+            } else if (results.user_requested !== null) {
+                console.log(`already requested ${req.body.username}`)
+
+                // Otherwise, send friend request to user.
+            } else {
+                console.log(`adding ${req.body.username} as friend...`)
+
+                User.updateOne({ username: req.user.username }, { $push: { outgoingRequests: req.body.username } }, function (err, docs) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log("Added to  : ", docs);
+                    }
+                });
+
+                User.updateOne({ username: req.body.username }, { $push: { incomingRequests: req.user.username } }, function (err, docs) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log("Added to incoming friends: ", docs);
+                    }
+                });
+
+            }
+        });
+};
+
+exports.friend_request_accept_post = (req, res, next) => {
+
+    async.parallel({
+
+        // Remove all requests from current user.
+        update_requests_1(callback) {
+            User.updateOne({ username: req.user.username },
+                {
+                    $pullAll: {
+                        outgoingRequests: req.body.username,
+                    },
+                }, {
+                $pullAll: {
+                    incomingRequests: req.body.username,
+                }
+            }, callback);
+        },
+
+        //Remove all requests from accepted user.
+        update_requests_2(callback) {
+            User.updateOne({ username: req.body.username },
+                {
+                    $pullAll: {
+                        outgoingRequests: req.user.username,
+                    },
+                }, {
+                $pullAll: {
+                    incomingRequests: req.user.username,
+                }
+            }, callback);
+        },
+
+        // Add friend for current user.
+        update_requests_2(callback) {
+            User.updateOne({ username: req.body.username },
+                { $push: { friends: req.user } }, callback);
+        },
+
+    },
+        (err, results) => {
+            console.log(`accepting friend:  ${req.body.username}...`);
+
+            if (err) return next(err);
+
+            User.find({ username: req.body.username }, (err, results) => {
+                if (err) return next(err);
+                
+                User.updateOne({username: req.user.username}, { $push: { friends: results } }, (err, results) => {
+                    res.render('profile', {
+                        user: req.user,
+                        user_preview: req.user,
+                        sheet: 'profile'
+                    })
+                });
+            });
+        });
+}
+
+// GET request for viewing a user's profile.
+exports.user_profile_get = (req, res, next) => {
+    async.parallel({
+        user(callback) {
+            User.findOne({ username: req.params.id }, callback);
+        },
+    },
+        (err, results) => {
+            console.log('fetching your profile...')
+
+            if (err) return next(err);
+
+            res.render('profile', {
+                user: req.user,
+                user_preview: results.user,
+                sheet: 'profile'
+            })
+        });
+};
+
 exports.memberize_post = (req, res, next) => {
     console.log(`memberizing ${req.body.id}...`);
 
-    User.updateOne({ _id: req.body.id }, {member: true}, function (err, docs) {
+    User.updateOne({ _id: req.body.id }, { member: true }, function (err, docs) {
         if (err) {
             console.log(err);
         } else {

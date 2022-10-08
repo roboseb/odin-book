@@ -10,6 +10,11 @@ const UserSchema = new Schema(
         dice: [],
         cards: [],
         cosmetics: [],
+        joinDate: { type: Date, required: true },
+        likes: { type: Number, required: true },
+        friends: [],
+        outgoingRequests: [],
+        incomingRequests: []
     }
 );
 

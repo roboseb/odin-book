@@ -1,6 +1,8 @@
 extends layout
 
 block content
+    include user-card
+
     #feed-panel.panel
         .panel-header Feed
 
@@ -24,11 +26,32 @@ block content
 
                 .post 
                     .post-header 
-                        .pic(style=`background-image: url('images/icons/${post.pic}.png')`) test
+                        .pic(style=`background-image: url('images/icons/${post.pic}.png')`)
                         .post-title= post.title     
                         .post-namedate-box
-                            .post-username= post.username 
-                            .post-date=processDate(post.postDate)
+                            a.post-username.username(href=`/users/${post.username}`)= post.username 
+                                each user in user_list 
+                                    if user.username === post.username 
+                                        +user-card(user)
+                            - var recentDate = false 
+                            - var date = new Date()
+                            - var hours = post.postDate.getHours()
+                            - var minutes = post.postDate.getMinutes()
+                            - var am = true
+                            if post.postDate && date.toLocaleDateString("en-US") === post.postDate.toLocaleDateString("en-US")
+                                - recentDate = true
+                            if recentDate 
+                                if hours > 11
+                                    - am = false
+                                    if hours > 12 
+                                        - hours = hours - 12
+                                if hours === 0
+                                    - hours = 12 
+
+                                if minutes < 10
+                                    - minutes = `0${minutes}`
+
+                            .post-date= recentDate ? `Today at ${hours}:${minutes} ${am ? 'am' : 'pm'}` : post.postDate.toLocaleDateString("en-US")
 
                     .post-content= post.content
 
@@ -42,8 +65,35 @@ block content
 
                         each comment in comment_list 
                             if comment.post.equals(post._id)
+                                .comment
+                                    .comment-header
+                                        .comment-pic(style=`background-image: url('images/icons/${comment.pic}.png')`)
+                                        .comment-namedate-box
+                                            a.comment-username.username(href=`/users/${post.username}`)= comment.username
+                                                each user in user_list 
+                                                    if user.username === comment.username 
+                                                        +user-card(user)
 
-                                .comment=comment.comment
+                                            - var date = new Date()
+                                            - var hours = comment.postDate.getHours()
+                                            - var minutes = comment.postDate.getMinutes()
+                                            - var am = true
+                                            if comment.postDate && date.toLocaleDateString("en-US") === comment.postDate.toLocaleDateString("en-US")
+                                                - recentDate = true
+                                            if recentDate 
+                                                if hours > 11
+                                                    - am = false
+                                                    if hours > 12 
+                                                        - hours = hours - 12
+                                                if hours === 0
+                                                    - hours = 12 
+
+                                                if minutes < 10
+                                                    - minutes = `0${minutes}`
+
+                                            .comment-date= recentDate ? `Today at ${hours}:${minutes} ${am ? 'am' : 'pm'}` : comment.postDate.toLocaleDateString("en-US")
+
+                                    .comment-content= comment.comment
 
 
 
@@ -52,10 +102,19 @@ block content
 
         #friends-panel.panel 
             .panel-header(onclick='togglePanel(this)') Friends
-            div dfsf
+
         #profile-panel.panel
             .panel-header(onclick='togglePanel(this)') Profile
-        #dice-panel.panel 
+
+        #dice-panel.panel.collapsed
             .panel-header(onclick='togglePanel(this)') Dice
+
+        #users-panel.panel 
+            .panel-header(onclick='togglePanel(this)') Users
+
+            #user-list 
+                each user in user_list 
+                    a.user-list-username.username(href=`/users/${user.username}`)= user.username
+                        +user-card(user)
 
     script(src='/javascripts/script.js')

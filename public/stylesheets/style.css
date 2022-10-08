@@ -4,7 +4,7 @@
     --spanish: #45236d;
     --deep-spanish: #2a0e47;
     --cerise: #d65676;
-    --cerise2:rgb(124, 22, 47);
+    --cerise2: rgb(124, 22, 47);
 
     --panel-height: 40px;
 }
@@ -26,6 +26,10 @@ h1, h2 {
     margin: 0;
 }
 
+a {
+    text-decoration: none;
+}
+
 #main-content {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -37,6 +41,8 @@ h1, h2 {
 
     flex-grow: 1;
     min-height: 0px;
+
+    overflow: hidden;
 }
 
 #navbar {
@@ -79,19 +85,19 @@ h1, h2 {
     border-radius: 15px;
 }
 
+.panel.collapsed>*:not(.panel-header) {
+    display: none !important;
+}
+
 #feed-panel {
     max-height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-#friends-panel {
-    
-}
+#friends-panel {}
 
-#dice-panel {
-
-}
+#dice-panel {}
 
 #side-panels {
     height: 100%;
@@ -167,7 +173,7 @@ h1, h2 {
     background-color: var(--deep-spanish);
 }
 
-.post-header {
+.post-header, .comment-header {
     background-color: var(--deep-spanish);
 
     display: grid;
@@ -178,7 +184,14 @@ h1, h2 {
     column-gap: 10px;
 }
 
-.pic {
+.comment-header {
+    display: flex;
+    align-items: center;
+    background-color: var(--deep-spanish);
+    padding-left: 10px;
+}
+
+.pic, .comment-pic {
     background-color: white;
     background-position: center;
     background-size: contain;
@@ -192,30 +205,42 @@ h1, h2 {
     grid-row: span 2;
 }
 
+.comment-pic {
+    height: 2rem;
+    width: 2rem;
+}
+
 .post-title {
     grid-column: span 2;
     font-size: 1.5rem;
 }
 
-.post-namedate-box {
+.post-namedate-box, .comment-namedate-box {
     display: flex;
     gap: 10px;
 }
 
-.post-username {
+.post-username, .comment-username {
     color: var(--cerise)
 }
 
-.post-date {
+.post-date, .comment-date {
     filter: opacity(0.5);
 }
 
-.post-content {
+.post-content, .comment-content {
     padding: 10px;
+}
+
+.comment-content {
+    background-color: var(--deep-spanish);
 }
 
 .post-comments {
     background-color: var(--spanish);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .post-comments form {
@@ -225,5 +250,121 @@ h1, h2 {
 }
 
 .post-comments input {
+    flex-grow: 1;
+}
+
+#user-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.user-list-username {
+    color: var(--cerise);
+}
+
+.username>* {
+    color: white;
+}
+
+.username {
+    position: relative;
+    cursor: pointer;
+
+    transition: all 0.2s;
+}
+
+.username:hover {
+    color: var(--cerise2);
+}
+
+.user-card {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+
+    transform: translate(0%, 100%);
+
+    background-color: var(--cerise);
+    padding: 5px;
+
+    filter: opacity(0);
+    pointer-events: none;
+
+    transition: all 0.2s;
+}
+
+.username:hover>.user-card {
+    pointer-events: all;
+    filter: opacity(1);
+}
+
+.card-header {
+    background-color: darkslategray;
+    display: flex;
+}
+
+.card-pic {
+    height: 2rem;
+    width: 2rem;
+}
+
+.card-header-info {
+
+}
+
+.card-username {}
+
+.card-likes {}
+
+.card-join-date {}
+
+
+.card-body {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.card-cards {
+    height: 4rem;
+    width: 4rem;
+
+    background-color: var(--russian);
+}
+
+.card-dice {
+    height: 4rem;
+    width: 4rem;
+
+    background-color: var(--russian);
+}
+
+.card-cosmetics {
+    height: 4rem;
+    width: 4rem;
+    
+    background-color: var(--russian);
+}
+
+.friend-btn {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    transform: translate(0%, 100%);
+}
+
+#friends-panels {
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#friends-panels>.panel {
     flex-grow: 1;
 }
