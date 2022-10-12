@@ -5,10 +5,14 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const passport = require("passport");
+const strategy = require('passport-facebook');
+const FacebookStrategy = strategy.Strategy;
 const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
 const bcrypt = require('bcryptjs');
 var bodyParser = require('body-parser')
+
+
 
 const formData = require('express-form-data');
 const os = require("os");
@@ -69,19 +73,62 @@ passport.use(
 );
 
 passport.serializeUser(function (user, done) {
-    done(null, user.id);
+    done(null, user);
 });
 
-passport.deserializeUser(function (id, done) {
-    User.findById(id, function (err, user) {
-        done(err, user);
-    });
+passport.deserializeUser(function (obj, done) {
+    done(null, obj);
 });
+
+passport.use(
+    new FacebookStrategy(
+        {
+            clientID: process.env.FACEBOOK_APP_ID,
+            clientSecret: process.env.FACEBOOK_APP_SECRET,
+            callbackURL: process.env.FACEBOOK_CALLBACK_URL,
+            profileFields: ["email", "name", "picture.type(large)", "id"]
+        },
+        function (accessToken, refreshToken, profile, done) {
+            const { email, first_name, last_name, id } = profile._json;
+            const userData = {
+                username: `${first_name} ${last_name}`,
+                password: id,
+                pic: profile.photos ? profile.photos[0].value : '1',
+                admin: false,
+                dice: [],
+                cards: [],
+                cosmetics: [],
+                joinDate: new Date(),
+                likes: 0,
+                friends: [],
+                outgoingRequests: [],
+                incomingRequests: []
+            };
+
+            // Check if Facebook account already has user in DB.
+            User.findOne({ password: id }, (err, results) => {
+
+                console.log(`https://graph.facebook.com/${profile.username}/picture?access_token=${accessToken}&&redirect=false`)
+
+                if (err) { return next(err); }
+
+                if (results === null) {
+                    new User(userData).save();
+                    done(null, userData);
+                } else {
+                    done(null, results);
+                }
+            });
+        }
+    )
+);
 
 app.use(session({ secret: "cats", resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
+
+
 
 app.use('/', indexRouter);
 

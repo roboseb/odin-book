@@ -107,7 +107,7 @@ exports.friend_request_send_post = (req, res, next) => {
         user_friended(callback) {
             User.findOne({
                 username: req.user.username,
-                friends: req.body.username
+                friends: { username: req.body.username}
             }, callback);
         },
         user_requested(callback) {
@@ -154,54 +154,46 @@ exports.friend_request_send_post = (req, res, next) => {
         });
 };
 
+// Accept friend request.
 exports.friend_request_accept_post = (req, res, next) => {
 
     async.parallel({
 
-        // Remove all requests from current user.
+        //Remove all requests from current user.
         update_requests_1(callback) {
             User.updateOne({ username: req.user.username },
-                {
-                    $pullAll: {
-                        outgoingRequests: req.body.username,
-                    },
-                }, {
-                $pullAll: {
-                    incomingRequests: req.body.username,
-                }
-            }, callback);
+                { $pull: { incomingRequests: req.body.username } },
+                callback);
         },
 
         //Remove all requests from accepted user.
         update_requests_2(callback) {
             User.updateOne({ username: req.body.username },
-                {
-                    $pullAll: {
-                        outgoingRequests: req.user.username,
-                    },
-                }, {
-                $pullAll: {
-                    incomingRequests: req.user.username,
-                }
-            }, callback);
+                { $pull: { outgoingRequests: req.user.username } },
+                callback);
         },
 
         // Add friend for current user.
-        update_requests_2(callback) {
+        update_requests_3(callback) {
             User.updateOne({ username: req.body.username },
-                { $push: { friends: req.user } }, callback);
+                { $push: { friends: req.user } },
+                callback);
         },
 
     },
         (err, results) => {
             console.log(`accepting friend:  ${req.body.username}...`);
 
+            console.log(err);
+
             if (err) return next(err);
 
             User.find({ username: req.body.username }, (err, results) => {
+                console.log('finding target user...')
+
                 if (err) return next(err);
-                
-                User.updateOne({username: req.user.username}, { $push: { friends: results } }, (err, results) => {
+
+                User.updateOne({ username: req.user.username }, { $push: { friends: results[0] } }, (err, results) => {
                     res.render('profile', {
                         user: req.user,
                         user_preview: req.user,
@@ -209,6 +201,36 @@ exports.friend_request_accept_post = (req, res, next) => {
                     })
                 });
             });
+        });
+}
+
+// Remove friend from both users' friends list.
+exports.friend_remove_post = (req, res, next) => {
+
+    async.parallel({
+
+        //Remove friend from current user.
+        remove_friend_1(callback) {
+            User.updateOne({ username: req.user.username },
+                { $pull: { friends: { username: req.body.username } } },
+                callback);
+        },
+
+        //Remove friend from accepted user.
+        remove_friend_2(callback) {
+            User.updateOne({ username: req.body.username },
+                { $pull: { friends: { username: req.user.username } } },
+                callback);
+        },
+    },
+        (err, results) => {
+            console.log(`removing friend:  ${req.body.username}...`);
+
+            res.render('profile', {
+                user: req.user,
+                user_preview: req.user,
+                sheet: 'profile'
+            })
         });
 }
 

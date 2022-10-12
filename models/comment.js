@@ -9,7 +9,8 @@ const CommentSchema = new Schema(
         pic: { type: String, required: true },
         likes: { type: Number, required: true },
         postDate: { type: Date, required: true },
-        post: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' }
+        post: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
+        likedUsers: { type: Array, required: true }
     }
 );
 

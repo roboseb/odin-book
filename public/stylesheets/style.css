@@ -191,7 +191,7 @@ a {
     padding-left: 10px;
 }
 
-.pic, .comment-pic {
+.pic, .comment-pic, .card-pic {
     background-color: white;
     background-position: center;
     background-size: contain;
@@ -367,4 +367,10 @@ a {
 
 #friends-panels>.panel {
     flex-grow: 1;
+}
+
+.comment-likes, .post-likes {
+    display: flex;
+    gap: 5px;
+    align-items: center;
 }

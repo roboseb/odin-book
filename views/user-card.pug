@@ -1,12 +1,14 @@
 mixin user-card(user)
     .user-card.shown
         .card-header 
-            .card-pic(style=`background-image: url('images/icons/${user.pic}.png')`)
+            - var  imgSrc = `../images/icons/${user.pic}.png`
+            if user.pic.length !== 1
+                - imgSrc = user.pic
+            .card-pic(style=`background-image: url(${imgSrc})`)
             .card-header-info
                 .card-username= user.username
                 .card-likes= `${user.likes} Likes`
-
-                .card-join-date= `Joined: ${user.joinDate.toLocaleDateString("en-US")}`
+                .card-join-date= `Joined: ${new Date(user.joinDate).toLocaleDateString('en-US')}`
                 button.friend-btn(onclick=`addFriend(${JSON.stringify(user)})`) Add Friend
         .card-body 
             .card-cards= `${user.cards.length} Cards`

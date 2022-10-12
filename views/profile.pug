@@ -4,7 +4,11 @@ block content
     include user-card
 
     #profile-info 
-        .pic(style=`background-image: url('../images/icons/${user_preview.pic}.png')`)
+        - var  imgSrc = `../images/icons/${user_preview.pic}.png`
+        if user_preview.pic.length !== 1
+            - imgSrc = user_preview.pic
+
+        .pic(style=`background-image: url(${imgSrc})`)
             #profile-details
                 #profile-username= user_preview.username
                 #profile-join-date= `Joined: ${user_preview.joinDate.toLocaleDateString("en-US")}` 
@@ -13,6 +17,10 @@ block content
     #friends-panels
         #friends-panel.panel
             .panel-header(onclick='togglePanel(this)') Friends
+
+            each friend in user_preview.friends 
+                    a.user-list-username.username(href=`/users/${friend.username}`)= friend.username
+                        +user-card(friend)
         
         if user && user_preview.username === user.username
             #outgoing-panel.panel 
@@ -33,9 +41,26 @@ block content
     #side-panels
 
         if user && user.username !== user_preview.username
+            - var isFriend = false;
+            each friend in user.friends 
+                if friend.username === user_preview.username 
+                    - isFriend = true
             #add-friend-btn.panel.collapsed
-                - console.log(user)
-                .panel-header(onclick=`addFriend(${JSON.stringify(user_preview)})`)=user.outgoingRequests.includes(user_preview.username) ? 'Request Sent' : 'Add Friend'
+                - var friendText = 'Add Friend' 
+                if isFriend
+                    - friendText = `You are friends with ${user_preview.username}`
+                     .panel-header=friendText
+                else if user.outgoingRequests.includes(user_preview.username) 
+                    - friendText = 'Friend request sent'
+                     .panel-header=friendText
+                else 
+                    .panel-header(onclick=`addFriend(${JSON.stringify(user_preview)})`)=friendText
+
+
+            if isFriend
+                #remove-friend-btn.panel.collapsed
+                    .panel-header(onclick=`removeFriend(${JSON.stringify(user_preview)})`) Remove friend
+
 
         #friends-panel.panel 
             .panel-header(onclick='togglePanel(this)') Dice

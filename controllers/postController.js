@@ -15,17 +15,15 @@ exports.new_post_post = [
     // Process request after validation and sanitization.
     (req, res, next) => {
         console.log('adding new post...')
-        console.log(req.user.username)
 
         // Extract the validation errors from a request.
         const errors = validationResult(req);
 
         User.findOne({ username: req.user.username }, (err, result) => {
             if (err) { return next(err); }
-            console.log(result);
 
             // Create post object.
-            var post = new Post(
+            var post = new Post (
                 {
                     user: result,
                     username: result.username,
@@ -34,7 +32,8 @@ exports.new_post_post = [
                     postDate: new Date(),
                     title: req.body.title,
                     content: req.body.content,
-                    comments: []
+                    comments: [],
+                    likedUsers: []
                 }
             );
 
@@ -80,11 +79,62 @@ exports.posts_get = (req, res, next) => {
 
 // POST request for liking a post.
 exports.post_like_post = (req, res, next) => {
+    async.parallel({
 
-    Post.findOneAndUpdate({ _id: req.body.id }, { $inc: { likes: 1 } }, (err, response) => {
-        console.log('liking post...')
+        // Add a like to the comment.
+        like_post(callback) {
+            Post.findOneAndUpdate({ _id: req.body.id }, { $inc: { likes: 1 } },
+                callback);
+        },
 
-        if (err) return next(err);
-        res.json('Post liked succesfully');
-    });
-};
+        // Add current user to comment's likes.
+        add_user_to_likes(callback) {
+            Post.findOneAndUpdate({ _id: req.body.id }, { $push: { likedUsers: req.user } },
+                callback);
+        },
+    },
+        (err, results) => {
+            if (err) return next(err);
+
+            // Add one like to comment's poster.
+            User.findOneAndUpdate({ username: req.body.username },
+                { $inc: { likes: 1 } },
+                (err, results) => {
+                    if (err) return next(err);
+
+                    console.log('post liked succesfully!');
+                    res.redirect('back');
+                });
+        });
+}
+
+// POST request for unliking a post.
+exports.post_unlike_post = (req, res, next) => {
+    async.parallel({
+
+        // Add a like to the comment.
+        unlike_post(callback) {
+            Post.findOneAndUpdate({ _id: req.body.id }, { $inc: { likes: -1 } },
+                callback);
+        },
+
+        // Add current user to comment's likes.
+        remove_user_from_likes(callback) {
+            Post.findOneAndUpdate({ _id: req.body.id }, { $pull: { likedUsers: req.user } },
+                callback);
+        },
+    },
+        (err, results) => {
+            if (err) return next(err);
+
+            // Remove one like from comment's poster.
+            User.findOneAndUpdate({ username: req.body.username },
+                { $inc: { likes: -1 } },
+                (err, results) => {
+                    if (err) return next(err);
+
+                    console.log('post unliked succesfully!');
+                    res.redirect('back');
+                });
+        });
+}

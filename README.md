@@ -22,6 +22,14 @@ October 7th, 2022
 
     Last prayer didn't work. Please God, I just want express to parse data and not send me undefined.
 
+October 10th, 2022
+
+    Took a couple days off. Not my fault, Overwatch 2 came out and that was out of my control. Today I want to get the friending stuff working, as well as likes on comments and posts. And if I get those two done, next thing is Facebook login integration.
+
+October 11th, 2022
+
+    Should be able to finish all the non-dice related functionality today. I think it's mostly only the facebook login that's left, but I may try to do live chat as well, since this app would be so much cooler if I could practive with that and then use the knowledge to make a live dice game. Time will tell, as always.
+
 
 ---To-Do---
 
@@ -33,3 +41,10 @@ October 7th, 2022
 -finalize by cleaning up code
 -like button (only able to like others' posts + only one like?)
 -standalone profile page
+-fix friend accepting not refreshing
+-unlike posts on click
+-cancel friend request
+-fix double friending?
+-replace localhost references
+-update site callback on facebook dev page
+-sort post feed by date (combined user posts sorting)

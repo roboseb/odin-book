@@ -67,6 +67,16 @@
     color: black;
 }
 
+#remove-friend-btn>.panel-header {
+    background-color: rgb(161, 26, 26);
+    color: white;
+}
+
+#remove-friend-btn>.panel-header:hover {
+    background-color: rgb(255, 128, 128);
+    color: black;
+}
+
 .accept-request-box {
     display: flex;
     justify-content: space-between;

@@ -8,7 +8,7 @@ const User = require('../models/user');
 // POST request for adding a new message.
 exports.new_comment_post = [
     // Validate and sanitize message.
-    body('comment').trim().isLength({min: 1}).withMessage('Comment must have content'),
+    body('comment').trim().isLength({ min: 1 }).withMessage('Comment must have content'),
 
     // Process request after validation and sanitization.
     (req, res, next) => {
@@ -20,8 +20,6 @@ exports.new_comment_post = [
         User.findOne({ username: req.user.username }, (err, result) => {
             if (err) { return next(err); }
 
-            console.log(result);
-
             // Create comment object.
             var comment = new Comment(
                 {
@@ -31,7 +29,8 @@ exports.new_comment_post = [
                     pic: result.pic,
                     likes: 0,
                     postDate: new Date(),
-                    post: req.body.post
+                    post: req.body.post,
+                    likedUsers: []
                 }
             );
 
@@ -57,26 +56,79 @@ exports.new_comment_post = [
 exports.comments_get = (req, res, next) => {
     async.parallel({
         comment_list(callback) {
-            Comment.find({}).sort({postDate: -1}).exec(callback); // Pass an empty object as match condition to find all documents of this collection
+            Comment.find({}).sort({ postDate: -1 }).exec(callback); // Pass an empty object as match condition to find all documents of this collection
         },
     },
         (err, results) => {
             console.log('fetching comments...')
 
             if (err) return next(err);
-            res.json({comment_list: results.comment_list});
+            res.json({ comment_list: results.comment_list });
         });
 };
 
-// POST request for liking a comment.
+// Like a comment, and increase the comment poster's like count.
 exports.comment_like_post = (req, res, next) => {
 
-    console.log(req.body.id);
+    async.parallel({
 
-    Comment.findOneAndUpdate({_id: req.body.id}, {$inc : {likes : 1}}, (err, response) => {
-        console.log('liking comment...')
+        // Add a like to the comment.
+        like_comment(callback) {
+            Comment.findOneAndUpdate({ _id: req.body.id }, { $inc: { likes: 1 } },
+                callback);
+        },
 
-        if (err) return next(err);
-        res.json('Comment liked succesfully');
-    });
-};
+        // Add current user to comment's likes.
+        add_user_to_likes(callback) {
+            Comment.findOneAndUpdate({ _id: req.body.id }, { $push: { likedUsers: req.user } },
+                callback);
+        },
+    },
+        (err, results) => {
+            if (err) return next(err);
+
+            // Add one like to comment's poster.
+            User.findOneAndUpdate({ username: req.body.username },
+                { $inc: { likes: 1 } },
+                (err, results) => {
+                    if (err) return next(err);
+
+                    console.log('comment liked succesfully!');
+                    res.redirect('back');
+                });
+        });
+}
+
+// Unlike a comment, and decrease the comment poster's like count.
+exports.comment_unlike_post = (req, res, next) => {
+
+    async.parallel({
+
+        // Remove a like from the comment.
+        unlike_comment(callback) {
+            Comment.findOneAndUpdate({ _id: req.body.id }, { $inc: { likes: -1 } },
+                callback);
+        },
+
+        // Add current user to comment's likes.
+        remove_from_user_likes(callback) {
+            Comment.findOneAndUpdate({ _id: req.body.id }, { $pull: { likedUsers: req.user } },
+                callback);
+        },
+    },
+        (err, results) => {
+            if (err) return next(err);
+
+            console.log('unliking comment...')
+
+            // Add one like to comment's poster.
+            User.findOneAndUpdate({ username: req.body.username },
+                { $inc: { likes: -1 } },
+                (err, results) => {
+                    if (err) return next(err);
+
+                    console.log('comment unliked succesfully!');
+                    res.redirect('back');
+                });
+        });
+}
