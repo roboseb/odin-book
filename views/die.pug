@@ -1,0 +1,15 @@
+mixin die(color)
+    .cube
+        - var pipCounts = [1, 2, 3, 4, 5, 6]
+            
+        each count in pipCounts
+            .cube__face(class=`cube__face--${count}` style=`background-color: ${color}`)
+                - var n = 1;
+                while n < count + 1
+                    .pip
+                    - n++
+
+        - var n = 0;
+        while n < 8
+            - n++  
+            .cube__face.cube__cover(class=`cube__cover--${n}` style=`background-color: ${color}`)

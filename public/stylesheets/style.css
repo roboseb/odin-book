@@ -1,0 +1,376 @@
+:root {
+    --russian: #23022E;
+    --silver: #ADA8B6;
+    --spanish: #45236d;
+    --deep-spanish: #2a0e47;
+    --cerise: #d65676;
+    --cerise2: rgb(124, 22, 47);
+
+    --panel-height: 40px;
+}
+
+body {
+    margin: 0;
+
+    height: 100vh;
+    width: 100vw;
+
+    display: flex;
+    flex-direction: column;
+    font-family: sans-serif;
+
+    color: white;
+}
+
+h1, h2 {
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+#main-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 10px;
+    padding: 10px;
+
+
+    background-color: var(--spanish);
+
+    flex-grow: 1;
+    min-height: 0px;
+
+    overflow: hidden;
+}
+
+#navbar {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+
+    background-color: var(--cerise);
+}
+
+#navbar>a {
+    color: black;
+    text-decoration: none;
+}
+
+#navbar>a:hover {
+    color: rgb(75, 75, 75);
+}
+
+.panel {
+    box-sizing: border-box;
+    background-color: var(--russian);
+    position: relative;
+
+    min-height: var(--panel-height);
+    border-radius: 15px 15px 0px 0px;
+    padding: var(--panel-height) 10px 10px 10px;
+
+    transition: all 0.2s;
+}
+
+.panel.collapsed {
+    flex-grow: initial !important;
+    border-radius: 15px !important;
+
+    padding: 0;
+}
+
+.panel.collapsed>.panel-header {
+    border-radius: 15px;
+}
+
+.panel.collapsed>*:not(.panel-header) {
+    display: none !important;
+}
+
+#feed-panel {
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#friends-panel {}
+
+#dice-panel {}
+
+#side-panels {
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#side-panels>.panel {
+    flex-grow: 1;
+}
+
+.panel-header {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+
+    background-color: var(--cerise);
+    color: black;
+    padding: 5px 0px;
+    width: 100%;
+    border-radius: 15px 15px 0px 0px;
+    border: 5px solid var(--russian);
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    cursor: pointer;
+    transition: inherit;
+}
+
+.panel-header:hover {
+    background-color: var(--cerise2);
+    color: white;
+}
+
+#post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    flex-grow: 1;
+    overflow-y: scroll;
+}
+
+/* width */
+.custom-scroll::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+.custom-scroll::-webkit-scrollbar-track {
+    background: black;
+    border-radius: 10px;
+
+    margin: 5px;
+}
+
+/* Handle */
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgb(26, 26, 26);
+}
+
+.post {
+    background-color: var(--deep-spanish);
+}
+
+.post-header, .comment-header {
+    background-color: var(--deep-spanish);
+
+    display: grid;
+    grid-template-columns: 4rem auto auto;
+    grid-template-rows: auto auto;
+
+    align-items: center;
+    column-gap: 10px;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    background-color: var(--deep-spanish);
+    padding-left: 10px;
+}
+
+.pic, .comment-pic, .card-pic {
+    background-color: white;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    height: 4rem;
+    width: 4rem;
+
+    image-rendering: pixelated;
+
+    grid-row: span 2;
+}
+
+.comment-pic {
+    height: 2rem;
+    width: 2rem;
+}
+
+.post-title {
+    grid-column: span 2;
+    font-size: 1.5rem;
+}
+
+.post-namedate-box, .comment-namedate-box {
+    display: flex;
+    gap: 10px;
+}
+
+.post-username, .comment-username {
+    color: var(--cerise)
+}
+
+.post-date, .comment-date {
+    filter: opacity(0.5);
+}
+
+.post-content, .comment-content {
+    padding: 10px;
+}
+
+.comment-content {
+    background-color: var(--deep-spanish);
+}
+
+.post-comments {
+    background-color: var(--spanish);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.post-comments form {
+    display: flex;
+    gap: 20px;
+    padding: 10px;
+}
+
+.post-comments input {
+    flex-grow: 1;
+}
+
+#user-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.user-list-username {
+    color: var(--cerise);
+}
+
+.username>* {
+    color: white;
+}
+
+.username {
+    position: relative;
+    cursor: pointer;
+
+    transition: all 0.2s;
+}
+
+.username:hover {
+    color: var(--cerise2);
+}
+
+.user-card {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+
+    transform: translate(0%, 100%);
+
+    background-color: var(--cerise);
+    padding: 5px;
+
+    filter: opacity(0);
+    pointer-events: none;
+
+    transition: all 0.2s;
+}
+
+.username:hover>.user-card {
+    pointer-events: all;
+    filter: opacity(1);
+}
+
+.card-header {
+    background-color: darkslategray;
+    display: flex;
+}
+
+.card-pic {
+    height: 2rem;
+    width: 2rem;
+}
+
+.card-header-info {
+
+}
+
+.card-username {}
+
+.card-likes {}
+
+.card-join-date {}
+
+
+.card-body {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.card-cards {
+    height: 4rem;
+    width: 4rem;
+
+    background-color: var(--russian);
+}
+
+.card-dice {
+    height: 4rem;
+    width: 4rem;
+
+    background-color: var(--russian);
+}
+
+.card-cosmetics {
+    height: 4rem;
+    width: 4rem;
+    
+    background-color: var(--russian);
+}
+
+.friend-btn {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    transform: translate(0%, 100%);
+}
+
+#friends-panels {
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#friends-panels>.panel {
+    flex-grow: 1;
+}
+
+.comment-likes, .post-likes {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}

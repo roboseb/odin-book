@@ -1,0 +1,133 @@
+extends layout
+
+block content
+    include user-card
+
+    #feed-panel.panel
+        .panel-header Feed
+
+        #post-form
+            if user
+                h2 New Post
+                form(method='POST' action='/posts/new')
+                    label(for='title') Title
+                    input(id='title' name='title' required)
+
+                    label(for='content') Content 
+                    input(id='content' name='content' required)
+
+                    button(type='submit') Submit
+            else 
+                div Please sign in to post
+
+
+        #post-list.custom-scroll
+            if user
+                each post, index in postlist
+                    if post.username === user.username || user.friends.some(e => e.username === post.username)
+
+                        .post 
+                            .post-header 
+                                - var  imgSrc = `../images/icons/${post.pic}.png`
+                                if post.pic.length !== 1
+                                    - imgSrc = post.pic
+                                .pic(style=`background-image: url(${imgSrc})`)
+                                .post-title= post.title     
+                                .post-namedate-box
+                                    a.post-username.username(href=`/users/${post.username}`)= post.username 
+                                        each user in user_list 
+                                            if user.username === post.username 
+                                                +user-card(user)
+                                    - var recentDate = false 
+                                    - var date = new Date()
+                                    - var hours = post.postDate.getHours()
+                                    - var minutes = post.postDate.getMinutes()
+                                    - var am = true
+                                    if post.postDate && date.toLocaleDateString("en-US") === post.postDate.toLocaleDateString("en-US")
+                                        - recentDate = true
+                                    if recentDate 
+                                        if hours > 11
+                                            - am = false
+                                            if hours > 12 
+                                                - hours = hours - 12
+                                        if hours === 0
+                                            - hours = 12 
+
+                                        if minutes < 10
+                                            - minutes = `0${minutes}`
+
+                                    .post-date= recentDate ? `Today at ${hours}:${minutes} ${am ? 'am' : 'pm'}` : post.postDate.toLocaleDateString("en-US")
+                                    .post-likes 
+                                        button(onclick=`likePost(${JSON.stringify(post)}, event, ${user ? JSON.stringify(user.username) : ''})`)= post.likedUsers.some(e => e.username === user.username) ? 'Unlike' : 'Like'
+                                        .post-like-count= post.likes
+
+                            .post-content= post.content
+
+                            .post-comments 
+                                form(method='POST' action='/comments/new')
+                                    input(name='post' value=post._id hidden)
+                                    label(for=`post-comment${index}`) Comment
+                                    input(type='text' id=`post-comment${index}` name='comment' required)
+                                    button(type='submit') Submit
+
+
+                                each comment in comment_list 
+                                    if comment.post.equals(post._id)
+                                        .comment
+                                            .comment-header
+                                                - var  imgSrc = `../images/icons/${comment.pic}.png`
+                                                if comment.pic.length !== 1
+                                                    - imgSrc = comment.pic
+                                                .comment-pic(style=`background-image: url(${imgSrc})`)
+                                                .comment-namedate-box
+                                                    a.comment-username.username(href=`/users/${post.username}`)= comment.username
+                                                        each user in user_list 
+                                                            if user.username === comment.username 
+                                                                +user-card(user)
+
+                                                    - var date = new Date()
+                                                    - var hours = comment.postDate.getHours()
+                                                    - var minutes = comment.postDate.getMinutes()
+                                                    - var am = true
+                                                    if comment.postDate && date.toLocaleDateString("en-US") === comment.postDate.toLocaleDateString("en-US")
+                                                        - recentDate = true
+                                                    if recentDate 
+                                                        if hours > 11
+                                                            - am = false
+                                                            if hours > 12 
+                                                                - hours = hours - 12
+                                                        if hours === 0
+                                                            - hours = 12 
+
+                                                        if minutes < 10
+                                                            - minutes = `0${minutes}`
+
+                                                    .comment-date= recentDate ? `Today at ${hours}:${minutes} ${am ? 'am' : 'pm'}` : comment.postDate.toLocaleDateString("en-US")
+                                                    .comment-likes 
+                                                        button(onclick=`likeComment(${JSON.stringify(comment)}, event, ${user ? JSON.stringify(user.username) : ''})`)= comment.likedUsers.some(e => e.username === user.username) ? 'Unlike' : 'Like'
+                                                        .comment-like-count= comment.likes
+                                            .comment-content= comment.comment
+
+
+
+
+    #side-panels
+
+        #friends-panel.panel 
+            .panel-header(onclick='togglePanel(this)') Friends
+
+        #profile-panel.panel
+            .panel-header(onclick='togglePanel(this)') Profile
+
+        #dice-panel.panel.collapsed
+            .panel-header(onclick='togglePanel(this)') Dice
+
+        #users-panel.panel 
+            .panel-header(onclick='togglePanel(this)') Users
+
+            #user-list 
+                each user in user_list 
+                    a.user-list-username.username(href=`/users/${user.username}`)= user.username
+                        +user-card(user)
+
+    script(src='/javascripts/script.js')
