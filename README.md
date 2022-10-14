@@ -42,6 +42,8 @@ October 13th, 2022
 
     I think I'm comfortable spending at least another seven days on this project, which at the rate I'm going will hopefully be enough time to get some pretty good functionality down. Time will tell. I think I may be able to get an online playable version of the basic dice game working today.
 
+    So I think my PC restarted due to a windows update without me closing out of the Ubuntu virtualbox I have. May have fucked the repo a bit, but I think it's all mostly here and working.
+
 
 ---To-Do---
 
@@ -60,3 +62,5 @@ October 13th, 2022
 -replace localhost references
 -update site callback on facebook dev page
 -sort post feed by date (combined user posts sorting)
+-roll all button
+-pokemon style idle animation

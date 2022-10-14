@@ -5,6 +5,13 @@ block content
     include die
 
     #dice-panels
+        #modal 
+            #modal-message Hey, this is a message.
+
+        #hand-score
+
+
+
         #dice-panel.panel
             .panel-header(onclick='togglePanel(this)') Play Saiko Kismet
             #dice-box.scene
@@ -22,6 +29,9 @@ block content
 
         #friends-panel.panel 
             .panel-header(onclick='togglePanel(this)') Dice
+            button(onclick='keepHand()') Next Hand
+            button(onclick='rollAllDice()') Roll All Dice
+            button(onclick='') End Turn
 
         #message-panel.panel
             .panel-header(onclick='togglePanel(this)') Messages 

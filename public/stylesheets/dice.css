@@ -9,6 +9,9 @@
     perspective-origin: 50% 50%; */
 
     transform-style: preserve-3d;
+
+    position: relative;
+    z-index: 1;
 }
 
 #dice-panels>.panel {
@@ -33,6 +36,9 @@
 
     perspective: 2000px;
     perspective-origin: 50% 50%;
+
+    filter: brightness(0.6);
+    transition: all 0.1s;
 }
 
 #opponent-box {
@@ -41,6 +47,10 @@
 
 #player-box {
     flex-direction: column-reverse;
+}
+
+#player-box.current-turn, #opponent-box.current-turn {
+    filter: brightness(1);
 }
 
 #player-dice, #opponent-dice {
@@ -86,10 +96,21 @@
     transition: all 0.2s;
 }
 
+.cube:not(.kept):hover {
+    z-index: 1;
+    /* transform: translateZ(500px) rotateX(-45deg) rotateY(-45deg); */
+    /* transform: translateZ(500px) rotateX(45deg) rotateY(-225deg); */
+    transform: translateZ(400px) rotateX(360deg) rotateY(360deg);
+}
+
 @keyframes roll {
     0% {transform: translateZ(50px) rotateY(0deg) rotateZ(0deg);}
     50% {transform: translateZ(50px) rotateY(180deg) rotateZ(180deg);}
     100% {transform: translateZ(50px) rotateY(360deg) rotateZ(360deg);}
+}
+
+.cube.kept>.cube__face {
+    filter: brightness(0.5);
 }
 
 .cube__face {
@@ -100,6 +121,49 @@
     /* border-radius: 20px; */
 
     transform-style: preserve-3d;
+}
+
+.cube__face>.keep-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    height: 100%;
+    width: 100%;
+    filter: opacity(0);
+
+    background-color: teal;
+    transition: all 0.2s;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    pointer-events: none;
+}
+
+.keep-btn>.keep-text {
+    pointer-events: none;
+}
+
+.cube__face>.keep-btn:hover {
+    background-color: rgb(33, 158, 158);
+}
+
+.cube.rolled>.cube__face:hover>.keep-btn {
+    filter: opacity(1);
+    pointer-events: all;
+}
+
+.cube.rolled.kept>.cube__face:hover>.keep-btn {
+    filter: opacity(0.8);
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    transform: translate(0%, 0%) translateZ(50px);
+
+    pointer-events: all;
 }
 
 .cube__cover {
@@ -293,42 +357,108 @@
     height: 20px;
     position: absolute;
     transform: translate(-50%, -50%);
+
+    pointer-events: none;
 }
 
 
 
 .cube.rolling {
     transition: all 0.5s;
-    transform: rotateX(-360deg) rotateY(-360deg);
+    /* transform: rotateZ(180deg) rotateX(180deg) rotateY(90deg); */
+    animation: rolling 0.245s 2;
+    pointer-events: none;
+}
+
+@keyframes rolling {
+    0% {transform: rotateZ(180deg) rotateX(180deg) rotateY(90deg);}
+    50% {transform: rotateZ(45deg) rotateX(225deg) rotateY(360deg);}
+    100% {transform: rotateZ(180deg) rotateX(180deg) rotateY(90deg);}
 }
 
 .cube.rolled-1 {
-    transform: rotateX(360deg) rotateY(360deg);
+    transform: translateZ(50px) rotateX(360deg) rotateY(360deg);
+}
+
+.cube:not(.kept).rolled-1:hover {
+    transform: translateZ(400px) rotateX(360deg) rotateY(360deg);
 }
 
 .cube.rolled-2 {
-    transform: rotateX(360deg) rotateY(270deg);
+    transform: translateZ(50px) rotateX(360deg) rotateY(270deg);
+}
+
+.cube:not(.kept).rolled-2:hover {
+    transform: translateZ(400px) rotateX(360deg) rotateY(270deg);
 }
 
 .cube.rolled-3 {
-    transform: rotateX(270deg) rotateY(360deg);
+    transform: translateZ(50px) rotateX(270deg) rotateY(360deg);
+}
+
+.cube:not(.kept).rolled-3:hover {
+    transform: translateZ(400px) rotateX(270deg) rotateY(360deg);
 }
 
 .cube.rolled-4 {
-    transform: rotateX(450deg) rotateY(360deg);
+    transform: translateZ(50px) rotateX(450deg) rotateY(360deg);
+}
+
+.cube:not(.kept).rolled-4:hover {
+    transform: translateZ(400px) rotateX(450deg) rotateY(360deg);
 }
 
 .cube.rolled-5 {
-    transform: rotateX(360deg) rotateY(450deg);
+    transform: translateZ(50px) rotateX(360deg) rotateY(450deg);
+}
+
+.cube:not(.kept).rolled-5:hover {
+    transform: translateZ(400px) rotateX(360deg) rotateY(450deg);
 }
 
 .cube.rolled-6 {
-    transform: rotateX(540deg) rotateY(360deg);
+    transform: translateZ(50px) rotateX(540deg) rotateY(360deg) rotateZ(180deg);
 }
 
-.cube:hover {
-    z-index: 1;
-    /* transform: translateZ(500px) rotateX(-45deg) rotateY(-45deg); */
-    /* transform: translateZ(500px) rotateX(45deg) rotateY(-225deg); */
-    transform: translateZ(400px) rotateX(315deg) rotateY(315deg);
+.cube:not(.kept).rolled-6:hover {
+    transform: translateZ(400px) rotateX(540deg) rotateY(360deg) rotateZ(180deg);
+}
+
+#modal {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    z-index: 2;
+
+    transform: translate(-50%);
+    padding: 20px;
+    background-color: aquamarine;
+    color: black;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    filter: opacity(0);
+    pointer-events: none;
+    transition: all 0.2s;
+}
+
+#modal.shown {
+    filter: opacity(1);
+    pointer-events: all;
+}
+
+#modal-message {
+
+}
+
+#hand-score {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+
+    font-size: 4rem;
 }
