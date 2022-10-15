@@ -44,6 +44,12 @@ October 13th, 2022
 
     So I think my PC restarted due to a windows update without me closing out of the Ubuntu virtualbox I have. May have fucked the repo a bit, but I think it's all mostly here and working.
 
+Ocotober 14th, 2022
+
+    I think the sausage I cooked was indeed a little out of date. Was tasty though, so I'll just have to try it again to check.
+
+    Today should be more than enough to at least get the local logic done for the base dice game. Would be nice if I could also get it working through socket.io somehow. Then I may even be able to justify creating custom dice or win conditions, whichever sounds more fun.
+
 
 ---To-Do---
 
@@ -64,3 +70,5 @@ October 13th, 2022
 -sort post feed by date (combined user posts sorting)
 -roll all button
 -pokemon style idle animation
+DONE-fix straights
+-choose score to play to

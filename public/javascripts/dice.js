@@ -1,35 +1,22 @@
-var socket = io();
-
-var messages = document.getElementById('messages');
-var form = document.getElementById('form');
-var input = document.getElementById('input');
-
-form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (input.value) {
-        socket.emit('chat message', input.value);
-        input.value = '';
-    }
-});
-
-socket.on('chat message', function (msg) {
-    var item = document.createElement('li');
-    item.textContent = msg;
-    messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
-});
-
-const state = {
+let state = {
     turn: null,
+    running: false,
+    lastTurn: false,
     player: {
         dice: {},
-        points: 0
+        score: 0,
+        handScore: 0,
+        tempScore: 0
     },
     opponent: {
         dice: {},
-        points: 0
+        score: 0,
+        handScore: 0,
+        tempScore: 0
     }
 }
+
+let diceMade = false;
 
 // Die constructor.
 function Die(die) {
@@ -42,7 +29,7 @@ function Die(die) {
     }
 
     this.rolled = false;
-    this.selected = false;
+    this.counted = false;
     this.kept = false;
     this.position = 1;
     this.die = die;
@@ -121,10 +108,36 @@ const generateDie = (box, color) => {
         // Add keep die function to all die's keep buttons.
         const keepBtns = Array.from(die.querySelectorAll('.keep-btn'));
         keepBtns.forEach(button => {
-            button.addEventListener('click', () => {
-                keepDie(state.player.dice[`die${index}`]);
+            button.addEventListener('click', (e) => {
+                keepDie(state.opponent.dice[`die${index}`], e);
             });
         });
+    }
+}
+
+// Check if the current player has gone bust after rolling all dice.
+const processBust = () => {
+    const dice = state[state.turn]['dice'];
+    let allRolled = true;
+    let diceArray = [];
+
+    Object.keys(dice).forEach(die => {
+        if (!dice[die].rolled) allRolled = false;
+
+        if (dice[die].rolled && !dice[die].counted) {
+            diceArray.push(dice[die].position);
+        }
+    });
+
+    // Not all dice rolled, return;
+    if (!allRolled) return;
+
+    //sendModal('All have been rolled');
+
+
+    if (updateHandScore(diceArray, false) === 0) {
+        sendModal('BUST');
+        endTurn(true);
     }
 }
 
@@ -151,6 +164,8 @@ const rollDie = (dieObj, e) => {
         dieObj.die.classList.remove('rolling');
         dieObj.die.classList.add(`rolled-${dieObj.position}`, 'rolled');
     }, 500);
+
+    processBust();
 }
 
 // Roll all of a player's available dice at once.
@@ -172,7 +187,7 @@ const rollAllDice = () => {
 }
 
 // Process points in current kept hand and update displayed score.
-const updateHandScore = (dice) => {
+const updateHandScore = (dice, shouldDisplay) => {
     const scoreDisplay = document.getElementById('hand-score')
     let score = 0;
     let straight = true;
@@ -188,7 +203,7 @@ const updateHandScore = (dice) => {
 
     // Count up all instances of dice.
     dice.forEach(roll => {
-        counts[roll] ++;
+        counts[roll]++;
     });
 
     // Check for a straight of dice.
@@ -196,11 +211,7 @@ const updateHandScore = (dice) => {
         if (!counts[i]) straight = false;
     }
 
-    if (straight) {
-        score = 1000;
-        console.log(score);
-        return;
-    } 
+
 
     // Calculate score for triples and singles.
     Object.keys(counts).forEach(count => {
@@ -217,10 +228,16 @@ const updateHandScore = (dice) => {
         }
     });
 
-    scoreDisplay.innerText = score;
+    if (straight) {
+        score = 1000;
+    }
 
+    if (shouldDisplay) {
+        scoreDisplay.innerText = score + state[state.turn]['handScore'];
+        state[state.turn]['tempScore'] = score;
+    }
 
-    console.log(score);
+    return score;
 }
 
 // Set die object to kept and style it.
@@ -240,13 +257,12 @@ const keepDie = (dieObj, e) => {
     // Convert dice objects into an array.
     let dice = [];
     for (let i = 0; i < 6; i++) {
-        if (state[state.turn]['dice'][`die${i}`].kept) {
+        if (state[state.turn]['dice'][`die${i}`].kept &&
+            !state[state.turn]['dice'][`die${i}`].counted) {
             dice.push(state[state.turn]['dice'][`die${i}`].position);
         }
     }
-
-    console.log(dice);
-    updateHandScore(dice);
+    updateHandScore(dice, true);
 }
 
 // Set a die to the unrolled state and unstyle it.
@@ -257,29 +273,16 @@ const unrollDie = (dieObj) => {
 
 // Keep current player's hand and move to next roll.
 const keepHand = () => {
-    console.log('keeping hand');
-    let dice;
+    const dice = state[state.turn]['dice'];
     let hand = [];
-    let diceLeft = false;
+    let allKept = true;
 
-    if (state.turn === 'player') {
-        dice = state.player.dice;
-    } else if (state.turn === 'opponent') {
-        dice = state.opponent.dice;
-    }
+    if (checkHandValidity() === false) return;
 
-    // Check for rolled dice in hand, and prevent keeping if some are left.
-    Object.keys(dice).forEach(die => {
-
-        if (!dice[die].rolled) {
-            diceLeft = true;
-        }
-    });
-
-    if (diceLeft) {
-        sendModal('You have dice left to roll!');
-        return;
-    }
+    // If valid and not bust hand, reset temp score and add temp score
+    // to hand score.
+    state[state.turn]['handScore'] += state[state.turn]['tempScore'];
+    state[state.turn]['tempScore'] = 0;
 
     // Add each newly rolled die to the hand array.
     // And reset rolled state on not kept dice.
@@ -287,19 +290,99 @@ const keepHand = () => {
 
         if (dice[die].rolled && dice[die].kept) {
             hand.push(dice[die].position);
+            dice[die].counted = true;
+            dice[die].die.classList.add('counted');
         }
 
         if (!dice[die].kept) {
             unrollDie(dice[die]);
+            allKept = false;
         }
     });
 
-    console.log(hand);
+    // If all dice are kept , reset to a new hand.
+    if (allKept) {
+        resetDice(state.turn);
+    }
+}
+
+// Check for several problems with current hand to prevent invalid keeps.
+const checkHandValidity = () => {
+    let diceLeft = false;
+    let diceKept = false;
+    let validHand = true;
+    let straight = true;
+
+    const dice = state[state.turn]['dice'];
+
+    // Check for rolled dice in hand, and prevent keeping if some are left.
+    Object.keys(dice).forEach(die => {
+        if (!dice[die].rolled) {
+            diceLeft = true;
+        }
+    });
+    if (diceLeft) {
+        sendModal('You have dice left to roll!');
+        return false;
+    }
+
+    // If all dice rolled, check that at least 1 die was kept.
+    Object.keys(dice).forEach(die => {
+        if (dice[die].kept && !dice[die].counted) {
+            diceKept = true;
+        }
+    });
+    
+    if (!diceKept) {
+        sendModal('You need to keep at least one die!');
+        return false;
+    }
+
+    // Check for invalid dice kept in hand.
+    const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+
+    Object.keys(dice).forEach(die => {
+        if (dice[die].counted) return;
+        if (dice[die].kept === false) return;
+        counts[dice[die].position]++;
+    });
+
+    // Invalid hands keep more than 1 but less than 3 of non 5s/1s.
+    Object.keys(counts).forEach(count => {
+        if (count !== '1' && count !== '5' &&
+            counts[count] > 0 && counts[count] < 3) {
+            validHand = false;
+        }
+
+        if (counts[count] !== 1) straight = false;
+    });
+
+    if (straight) validHand = true;
+
+    if (!validHand) {
+        sendModal('Hand is invalid!');
+        return false;
+    }
+}
+
+// Check for a win after passing turn, and allow one more turn if true.
+const checkForWin = () => {
+    if (state.player.score >= 1000 || state.opponent.score >= 1000) {
+        state.lastTurn = true;
+        sendModal('Last turn!')
+    }
 }
 
 // Set the current turn to the passed player.
 const setTurn = (player) => {
     state.turn = player;
+
+    // Reset current player's scores.
+    state[player].handScore = 0;
+    state[player].tempScore = 0;
+
+    // Reset all current player's dice.
+    resetDice(player);
 
     const playerBox = document.getElementById('player-box');
     const opponentBox = document.getElementById('opponent-box');
@@ -309,13 +392,21 @@ const setTurn = (player) => {
 
     const board = document.getElementById(`${player}-box`);
     board.classList.add('current-turn');
+}
 
-    // Prevent interacting with the board of the other player.
-    if (state.turn === 'player') {
-        opponentBox.style.pointerEvents = 'none'
-    } else if (state.turn === 'opponent') {
-        playerBox.style.pointerEvents = 'all'
-    }
+// Reset all of passed player's dice and displayed dice.
+const resetDice = (player) => {
+    const dice = state[player]['dice'];
+    Object.keys(dice).forEach(die => {
+        dice[die]['die'].classList.remove('kept', 'rolled', 'counted',
+            'rolled-1', 'rolled-2', 'rolled-3', 'rolled-4', 'rolled-5',
+            'rolled-6');
+
+        dice[die].position = 1;
+        dice[die].rolled = false;
+        dice[die].kept = false;
+        dice[die].counted = false;
+    });
 }
 
 // Animate the initial turn rolling.
@@ -337,7 +428,49 @@ const rollTurn = () => {
     const interval = setInterval(rollTurn, 150);
     setTimeout(() => {
         clearInterval(interval);
-    }, 2000)
+    }, 150)
+}
+
+// End the current turn, and then switch turn.
+const endTurn = (bust) => {
+
+    // Check for a valid hand.
+    if (!bust && checkHandValidity() === false) return;
+
+    // If not bust, update score and score display.
+    if (!bust) {
+        state[state.turn]['score'] += state[state.turn]['handScore'] + state[state.turn]['tempScore'];
+
+        console.log(state[state.turn]['score']);
+
+        const display = document.getElementById(`${state.turn}-score`);
+        display.innerText = state[state.turn]['score'];
+    }
+
+    // Switch the current turn.
+    state[state.turn]['handScore'] = 0;
+    state[state.turn]['tempScore'] = 0;
+
+    document.getElementById('hand-score').innerText = 0;
+
+    // If current turn is last, calculate winner on end of turn.
+    if (state.lastTurn) {
+
+        if (state['opponent']['score'] > state['player']['score']) {
+            sendModal('Opponent has won!')
+            console.log('Opponent has won!')
+        } else if (state['player']['score'] > state['opponent']['score']) {
+            sendModal('Player has won!')
+            console.log('player has won!')
+        } else {
+            sendModal("It's a tie!")
+        }
+
+        return;
+    }
+
+    checkForWin();
+    state.turn === 'player' ? setTurn('opponent') : setTurn('player');
 }
 
 // Display a Modal message.
@@ -356,13 +489,39 @@ const sendModal = (message) => {
     }, 2000);
 }
 
-// Handle initializing game board, and roll for turn.
-const startGame = (() => {
-    generateDice(6);
-    //rollTurn();
+// Reset all parts of game state.
+const resetGame = () => {
+    state.turn = null;
+    state.running = false;
+    state.lastTurn = false;
 
-    setTurn('player');
-})();
+    ['player', 'opponent'].forEach(player => {
+        state[player].score = 0;
+        state[player].handScore = 0;
+        state[player].tempScore = 0;
+    });
 
+    resetDice('player');
+    resetDice('opponent');
 
+    const playerScore = document.getElementById('player-score');
+    const opponentScore = document.getElementById('opponent-score');
+    const handScore = document.getElementById('hand-score');
 
+    playerScore.innerText = 0;
+    opponentScore.innerText = 0;
+    handScore.innerText = 0;
+
+    sendModal('New game started');
+}
+
+// Start a game of saiko kismet.
+const startGame = () => {
+    if (!diceMade) {
+        generateDice(6);
+        diceMade = true;
+    }
+
+    resetGame();
+    rollTurn();
+};

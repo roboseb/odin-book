@@ -18,6 +18,11 @@ router.get('/dice', function (req, res, next) {
     res.render('dice', { sheet: 'dice', user: req.user });
 });
 
+/* GET dice multiplayer page. */
+router.get('/dice/multiplayer', function (req, res, next) {
+    res.render('dice-multiplayer', { sheet: 'dice', user: req.user });
+});
+
 // POST for sign-up.
 router.post('/sign-up', user_create_post);
 

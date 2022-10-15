@@ -39,6 +39,7 @@
 
     filter: brightness(0.6);
     transition: all 0.1s;
+    pointer-events: none;
 }
 
 #opponent-box {
@@ -47,10 +48,12 @@
 
 #player-box {
     flex-direction: column-reverse;
+    
 }
 
 #player-box.current-turn, #opponent-box.current-turn {
     filter: brightness(1);
+    pointer-events: all;
 }
 
 #player-dice, #opponent-dice {
@@ -97,7 +100,7 @@
 }
 
 .cube:not(.kept):hover {
-    z-index: 1;
+    z-index: 2 !important;
     /* transform: translateZ(500px) rotateX(-45deg) rotateY(-45deg); */
     /* transform: translateZ(500px) rotateX(45deg) rotateY(-225deg); */
     transform: translateZ(400px) rotateX(360deg) rotateY(360deg);
@@ -107,6 +110,14 @@
     0% {transform: translateZ(50px) rotateY(0deg) rotateZ(0deg);}
     50% {transform: translateZ(50px) rotateY(180deg) rotateZ(180deg);}
     100% {transform: translateZ(50px) rotateY(360deg) rotateZ(360deg);}
+}
+
+.cube.counted {
+    z-index: 0;
+}
+
+.cube:not(.counted) {
+    z-index: 1;
 }
 
 .cube.kept>.cube__face {
@@ -121,6 +132,10 @@
     /* border-radius: 20px; */
 
     transform-style: preserve-3d;
+}
+
+.cube.counted>.cube__face>.keep-btn {
+    display: none;
 }
 
 .cube__face>.keep-btn {
@@ -384,12 +399,28 @@
     transform: translateZ(400px) rotateX(360deg) rotateY(360deg);
 }
 
+.cube.rolled-1>.cube__face:not(.cube__face--1) {
+    pointer-events: none;
+}
+
+.cube.rolled-1.counted {
+    transform: translateZ(-50px) rotateX(360deg) rotateY(360deg);
+}
+
 .cube.rolled-2 {
     transform: translateZ(50px) rotateX(360deg) rotateY(270deg);
 }
 
 .cube:not(.kept).rolled-2:hover {
     transform: translateZ(400px) rotateX(360deg) rotateY(270deg);
+}
+
+.cube.rolled-2>.cube__face:not(.cube__face--2) {
+    pointer-events: none;
+}
+
+.cube.rolled-2.counted {
+    transform: translateZ(-50px) rotateX(360deg) rotateY(270deg);
 }
 
 .cube.rolled-3 {
@@ -400,12 +431,28 @@
     transform: translateZ(400px) rotateX(270deg) rotateY(360deg);
 }
 
+.cube.rolled-3>.cube__face:not(.cube__face--3) {
+    pointer-events: none;
+}
+
+.cube.rolled-3.counted {
+    transform: translateZ(-50px) rotateX(270deg) rotateY(360deg);
+}
+
 .cube.rolled-4 {
     transform: translateZ(50px) rotateX(450deg) rotateY(360deg);
 }
 
 .cube:not(.kept).rolled-4:hover {
     transform: translateZ(400px) rotateX(450deg) rotateY(360deg);
+}
+
+.cube.rolled-4>.cube__face:not(.cube__face--4) {
+    pointer-events: none;
+}
+
+.cube.rolled-4.counted {
+    transform: translateZ(-50px) rotateX(450deg) rotateY(360deg);
 }
 
 .cube.rolled-5 {
@@ -416,12 +463,28 @@
     transform: translateZ(400px) rotateX(360deg) rotateY(450deg);
 }
 
+.cube.rolled-5>.cube__face:not(.cube__face--5) {
+    pointer-events: none;
+}
+
+.cube.rolled-5.counted {
+    transform: translateZ(-50px) rotateX(360deg) rotateY(450deg);
+}
+
 .cube.rolled-6 {
     transform: translateZ(50px) rotateX(540deg) rotateY(360deg) rotateZ(180deg);
 }
 
 .cube:not(.kept).rolled-6:hover {
     transform: translateZ(400px) rotateX(540deg) rotateY(360deg) rotateZ(180deg);
+}
+
+.cube.rolled-6>.cube__face:not(.cube__face--6) {
+    pointer-events: none;
+}
+
+.cube.rolled-6.counted {
+    transform: translateZ(-50px) rotateX(540deg) rotateY(360deg) rotateZ(180deg);
 }
 
 #modal {
@@ -461,4 +524,24 @@
     z-index: 2;
 
     font-size: 4rem;
+}
+
+#score-board {
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+#lobby-box {
+    height: 100%;
+    width: 100%;
+
+    background-color: burlywood;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#game-list {
+    flex-grow: 1;
+    background-color: coral;
 }

@@ -8,18 +8,29 @@ block content
         #modal 
             #modal-message Hey, this is a message.
 
-        #hand-score
+        #hand-score(style='display: none')
 
 
 
-        #dice-panel.panel
+        #lobby-panel.panel 
+            .panel-header(onclick='togglePanel(this)') Game Finder 
+
+            #key-box
+            #join-game-box 
+                input#join-game-input(placeholder="Friend's Key")
+                button#join-game-btn(onclick='joinRoom()') Join Game
+
+            #joined-game-box
+
+
+
+        #dice-panel.panel.collapsed
             .panel-header(onclick='togglePanel(this)') Play Saiko Kismet
             #dice-box.scene
                 #opponent-box 
                     #opponent-dice
                 #player-box 
                     #player-dice
-
 
 
 
@@ -64,3 +75,4 @@ block content
     
     <script src="/socket.io/socket.io.js"></script>
     script(src='/javascripts/dice.js')
+    script(src='/javascripts/dice-multiplayer.js')

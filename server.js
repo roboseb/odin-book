@@ -6,12 +6,19 @@ const socketapi = {
 // Add your socket.io logic here!
 io.on('connection', (socket) => {
     console.log('a user connected');
+
+    socket.on('join room', (key) => {
+        socket.join(key);
+        console.log(key);
+    });
+
+
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
 
-    socket.on('chat message', (msg) => {
-        io.emit('chat message', msg);
+    socket.on('new game', (name) => {
+        io.emit('new game', name);
     });
 });
 
