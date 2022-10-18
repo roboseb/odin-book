@@ -13,7 +13,7 @@ block content
 
 
         #dice-panel.panel
-            .panel-header(onclick='togglePanel(this)') Play Saiko Kismet
+            .panel-header Play Saiko Kismet
             #dice-box.scene
                 #opponent-box 
                     #opponent-dice
@@ -25,22 +25,22 @@ block content
 
     #side-panels
         #lobby-panel.panel 
-            .panel-header(onclick='togglePanel(this)') Game Finder 
+            .panel-header Game Finder 
 
             #key-box
             #join-game-box 
                 input#join-game-input(placeholder="Friend's Key" value='111111') 
-                button#join-game-btn(onclick='joinRoom()') Join Game
+                button#join-game-btn Join Game
 
             #joined-game-box
 
 
         #friends-panel.panel 
-            .panel-header(onclick='togglePanel(this)') Dice
-            button(onclick='keepHand()') Next Hand
-            button(onclick='rollAllDice()') Roll All Dice
-            button(onclick='endTurn()') End Turn
-            button#new-game-btn(onclick='startGame()') New Game
+            .panel-header Dice
+            button#keep-hand-btn Next Hand
+            button#roll-dice-btn Roll All Dice
+            button#end-turn-btn End Turn
+            button#new-game-btn New Game
 
             #score-board    
                 .score-username Player 
@@ -49,11 +49,11 @@ block content
                 #opponent-score 0
 
         #message-panel.panel
-            .panel-header(onclick='togglePanel(this)') Messages 
+            .panel-header Messages 
             ul#messages
             #message-box
                 input#message-input(autocomplete="off")
-                button#message-send-btn(onclick='sendMessage()') Send
+                button#message-send-btn Send
 
 
 

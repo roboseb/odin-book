@@ -199,11 +199,19 @@ const joinRoom = () => {
     newGameButton.setAttribute('disabled', "");
 }
 
+// Add event listener to join game button.
+const joinGameButton = document.getElementById('join-game-btn');
+joinGameButton.addEventListener('click', joinRoom);
+
 // Send a message to other users sharing the same current room.
 const sendMessage = () => {
     const input = document.getElementById('message-input');
     socket.emit('message', input.value, currentKey);
 }
+
+// Add event listener to button for sending messages.
+const sendMessageButton = document.getElementById('message-send-btn');
+sendMessageButton.addEventListener('click', sendMessage);
 
 // Add socket listener for receiving messages.
 socket.on('message', (text) => {
@@ -440,6 +448,10 @@ const rollAllDice = () => {
     });
 }
 
+// Add event listener to button for rolling all dice.
+const rollDiceButton = document.getElementById('roll-dice-btn');
+rollDiceButton.addEventListener('click', rollAllDice);
+
 // Process points in current kept hand and update displayed score.
 const updateHandScore = (dice, shouldDisplay) => {
     const scoreDisplay = document.getElementById('hand-score')
@@ -579,6 +591,10 @@ const keepHand = () => {
         resetDice(state.turn);
     }
 }
+
+// Add event listener to button for keeping hand.
+const keepHandButton = document.getElementById('keep-hand-btn');
+keepHandButton.addEventListener('click', keepHand);
 
 // Check for several problems with current hand to prevent invalid keeps.
 const checkHandValidity = () => {
@@ -751,6 +767,10 @@ const endTurn = (bust) => {
     socket.emit('end turn', currentKey, convertState(state), host);
 }
 
+// Add event listener to button for ending turn.
+const endTurnButton = document.getElementById('end-turn-btn');
+endTurnButton.addEventListener('click', () => endTurn(false));
+
 // Display a Modal message.
 let modalTimeout;
 const sendModal = (message) => {
@@ -802,8 +822,7 @@ const startGame = (player) => {
     if (!host) {
     }
 
-    resetGame('player');
-    resetGame('opponent');
+    resetGame();
     
 
     //Choose a random player to begin.
@@ -816,15 +835,15 @@ const startGame = (player) => {
     if (host && multi) {
         socket.emit('new game', currentKey, convertState(state));
     }
-
-    
 };
+
+// Add event listener to button for starting a new game.
+const newGameButton = document.getElementById('new-game-btn');
+newGameButton.addEventListener('click', () => startGame(false));
 
 // Convert state to be passed between players, to show the perspective shift.
 const convertState = (oldState) => {
     
-
-
     // Copy oldstate but swap player and opponent data.
     let newState = {
         turn: state.turn,

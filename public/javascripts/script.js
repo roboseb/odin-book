@@ -4,6 +4,14 @@ const togglePanel = (target) => {
     panel.classList.toggle('collapsed');
 }
 
+// Add event listeners to all panels.
+const panels = Array.from(document.querySelectorAll('.panel-header'));
+panels.forEach(header => {
+    header.addEventListener('click', () => {
+        togglePanel(header);
+    });
+});
+
 let friendAdded = false
 
 // Send friend request to passed user from logged in user.
