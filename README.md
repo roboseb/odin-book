@@ -54,6 +54,10 @@ October 17th, 2022
 
     Slept like ass last night. Starting to work on this quite a bit later than I usually do, and after having lost a bunch of Hearthstone. Oh welly. I think I'm in a pretty good place to get the web socket stuff working today.
 
+October 18th, 2022
+
+    Thinking that I can give this a bout one more week. As in, maybe five more working days. The game is very close to being fully functional online through web sockets. I think five days also gives me enough time to have custom dice generated that are cosmetic only. Any mechanic changes would probably add a decent amount of time to development, even if it's only a day or two. Wanna be done with everything by halloween weekend so that I can get plastered.
+
 
 ---To-Do---
 
@@ -78,3 +82,5 @@ DONE-fix straights
 -choose score to play to
 -Disable dice options until new game started.
 -rerandomize room key
+-fancy winning/losing animations
+-send bust/last turn/win modal through web socket

@@ -70,7 +70,7 @@ socket.on('keep die', (position, kept, newState) => {
     kept ? animateKeep(newDie, 'Unkeep') : animateKeep(newDie, 'Keep');
     const handScore = document.getElementById('hand-score');
 
-    handScore.innerText = state.opponent.tempScore;
+    handScore.innerText = state.opponent.tempScore + state.opponent.handScore;
 });
 
 socket.on('count die', (position, kept, newState) => {
@@ -85,33 +85,92 @@ socket.on('count die', (position, kept, newState) => {
 });
 
 // Animate opponent hovering over their dice.
-socket.on('mouseenter', (index, currentHost) => {
+socket.on('mouseenter', (index, currentHost, box) => {
     
-    console.log(host, currentHost);
+    // Prevent animating dice for player hovering.
     if (host === currentHost) return;
-    console.log('hovering...')
+
+    let playerBox;
+
+    if (box === 'player-dice') {
+        playerBox = document.getElementById('opponent-box');
+    } else {
+        playerBox = document.getElementById('player-box');
+    }
+
+    const die = playerBox.querySelector(`#die-${index}`);
+    die.classList.add('hovered');
 });
 
 // Animate opponent ending hovering over their dice.
-socket.on('mouseleave', (index, currentHost) => {
+socket.on('mouseleave', (index, currentHost, box) => {
+
+    // Prevent animating dice for player hovering.
     if (host === currentHost) return;
-    console.log('unhovering...')
+
+    let playerBox;
+
+    if (box === 'player-dice') {
+        playerBox = document.getElementById('opponent-box');
+    } else {
+        playerBox = document.getElementById('player-box');
+    }
+
+    const die = playerBox.querySelector(`#die-${index}`);
+    die.classList.remove('hovered');
+});
+
+// Receive info after opponent has passed the turn.
+socket.on('end turn', (newState, isHost) => {
+    console.log(newState);
+    
+    // Prevent player who passed from repassing turn.
+    if (isHost === host) return;
+    console.log('getting the turn...')
+
+    let playerDice = state.player.dice;
+    let opponentDice = state.opponent.dice;
+
+    let tempState = newState;
+    tempState.player.dice = playerDice;
+    tempState.opponent.dice = opponentDice;
+
+    state = tempState;
+
+    document.getElementById('player-score').innerText = state.player.score;
+    document.getElementById('opponent-score').innerText = state.opponent.score;
+    document.getElementById('hand-score').innerText = 0;
+
+    setTurn(state.turn);
 });
 
 // Take state passed from opponent and take only relevant info.
 const updateState = (opponentState) => {
+
     const newState = Object.create(opponentState);
 
     // Overwrite passed state with local dice DOM elements.
     Object.keys(newState.player.dice).forEach(die => {
         newState.player.dice[die].die = state.player.dice[die].die;
+        newState.player.dice[die].roll = () => {
+            const side = Math.ceil(Math.random() * 6);
+            newState.player.dice[die].position = side;
+            return side;
+        }
     });
 
     Object.keys(newState.opponent.dice).forEach(die => {
         newState.opponent.dice[die].die = state.opponent.dice[die].die;
+        newState.opponent.dice[die].roll = () => {
+            const side = Math.ceil(Math.random() * 6);
+            newState.opponent.dice[die].position = side;
+            return side;
+        }
     });
 
     state = newState;
+
+    console.log(state.player.dice);
 }
 
 // Generate a random id.
@@ -276,11 +335,11 @@ const generateDie = (box, color, index) => {
 
     // Animate player hovering over dice for the opponent.
     die.addEventListener('mouseenter', () => {
-        socket.emit('mouseenter', currentKey, index, host);
+        socket.emit('mouseenter', currentKey, index, host, box);
     });
 
     die.addEventListener('mouseleave', () => {
-        socket.emit('mouseleave', currentKey, index, host);
+        socket.emit('mouseleave', currentKey, index, host, box);
     });
 }
 
@@ -312,6 +371,10 @@ const processBust = () => {
 
 // Animate rolling dice, and update their states in player objects.
 const rollDie = (dieObj, e) => {
+
+    // Prevent rolling when game is not running.
+    if (!state.running) return;
+
     // Prevent rolling on keep button click.
     if (e && !e.target.classList.contains('cube__face')) return;
 
@@ -357,6 +420,10 @@ const animateRoll = (dieObj) => {
 
 // Roll all of a player's available dice at once.
 const rollAllDice = () => {
+
+    // Prevent opponent rolling player dice in multiplayer.
+    if (multi && state.turn === 'opponent') return;
+
     let dice;
     if (state.turn === 'player') {
         dice = state.player.dice;
@@ -663,6 +730,7 @@ const endTurn = (bust) => {
 
     // If current turn is last, calculate winner on end of turn.
     if (state.lastTurn) {
+        state.running = false;
 
         if (state['opponent']['score'] > state['player']['score']) {
             sendModal('Opponent has won!')
@@ -678,7 +746,9 @@ const endTurn = (bust) => {
     }
 
     checkForWin();
+    
     state.turn === 'player' ? setTurn('opponent') : setTurn('player');
+    socket.emit('end turn', currentKey, convertState(state), host);
 }
 
 // Display a Modal message.
@@ -703,7 +773,7 @@ const resetGame = (player) => {
     // If game resetting with a particular player, don't set turn to null.
     player ? null : state.turn = null;
 
-    state.running = false;
+    state.running = true;
     state.lastTurn = false;
 
     ['player', 'opponent'].forEach(option => {
@@ -752,19 +822,23 @@ const startGame = (player) => {
 
 // Convert state to be passed between players, to show the perspective shift.
 const convertState = (oldState) => {
-
-    // Copy state to newState without referencing.
-    let newState = Object.create(oldState);
-
-    newState.opponent = oldState.player;
-    newState.player = oldState.opponent;
     
+
+
+    // Copy oldstate but swap player and opponent data.
+    let newState = {
+        turn: state.turn,
+        running: state.running,
+        lastTurn: state.lastTurn,
+        player: state.opponent,
+        opponent: state.player,
+    }
+
     if (newState.turn === 'player') {
         newState.turn = 'opponent';
     } else {
         newState.turn = 'player';
     }
-
     return newState; 
 }
 

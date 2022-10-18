@@ -93,10 +93,13 @@
     height: 100px;
     width: 100px;
 
+    outline: 5px solid rgba(0, 128, 128, 0);
+
     transform: translateZ(50px) rotateX(360deg) rotateY(360deg);
 
     cursor: pointer;
     transition: all 0.2s;
+    box-sizing: border-box;
 }
 
 .cube:not(.kept):hover {
@@ -544,4 +547,25 @@
 #game-list {
     flex-grow: 1;
     background-color: coral;
+}
+
+.die>.cube__face::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    height: 100%;
+    width: 100%;
+
+    background-color: rgb(0, 128, 128);
+    filter: opacity(0);
+    /* outline: 5px solid rgba(0, 128, 128, 0); */
+    transition: all 0.2s;
+    pointer-events: none;
+}
+
+.die.hovered>.cube__face::after {
+    filter: opacity(0.3);
+    /* outline: 5px solid rgba(0, 128, 128, 0.787); */
 }

@@ -36,12 +36,16 @@ io.on('connection', (socket) => {
         io.to(key).emit('count die', position, kept, state);
     })
 
-    socket.on('mouseenter', (key, index) => {
-        io.to(key).emit('mouseenter', index);
+    socket.on('mouseenter', (key, index, host, box) => {
+        io.to(key).emit('mouseenter', index, host, box);
     });
 
-    socket.on('mouseleave', (key, index) => {
-        io.to(key).emit('mouseleave', index);
+    socket.on('mouseleave', (key, index, host, box) => {
+        io.to(key).emit('mouseleave', index, host, box);
+    });
+
+    socket.on('end turn', (key, state, host) => {
+        io.to(key).emit('end turn', state, host);
     });
 
     // Send a message to all users in the current room.
