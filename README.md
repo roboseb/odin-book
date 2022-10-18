@@ -50,6 +50,10 @@ Ocotober 14th, 2022
 
     Today should be more than enough to at least get the local logic done for the base dice game. Would be nice if I could also get it working through socket.io somehow. Then I may even be able to justify creating custom dice or win conditions, whichever sounds more fun.
 
+October 17th, 2022
+
+    Slept like ass last night. Starting to work on this quite a bit later than I usually do, and after having lost a bunch of Hearthstone. Oh welly. I think I'm in a pretty good place to get the web socket stuff working today.
+
 
 ---To-Do---
 
@@ -72,3 +76,5 @@ Ocotober 14th, 2022
 -pokemon style idle animation
 DONE-fix straights
 -choose score to play to
+-Disable dice options until new game started.
+-rerandomize room key

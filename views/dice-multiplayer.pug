@@ -8,23 +8,11 @@ block content
         #modal 
             #modal-message Hey, this is a message.
 
-        #hand-score(style='display: none')
+        #hand-score
 
 
 
-        #lobby-panel.panel 
-            .panel-header(onclick='togglePanel(this)') Game Finder 
-
-            #key-box
-            #join-game-box 
-                input#join-game-input(placeholder="Friend's Key")
-                button#join-game-btn(onclick='joinRoom()') Join Game
-
-            #joined-game-box
-
-
-
-        #dice-panel.panel.collapsed
+        #dice-panel.panel
             .panel-header(onclick='togglePanel(this)') Play Saiko Kismet
             #dice-box.scene
                 #opponent-box 
@@ -36,6 +24,15 @@ block content
 
 
     #side-panels
+        #lobby-panel.panel 
+            .panel-header(onclick='togglePanel(this)') Game Finder 
+
+            #key-box
+            #join-game-box 
+                input#join-game-input(placeholder="Friend's Key" value='111111') 
+                button#join-game-btn(onclick='joinRoom()') Join Game
+
+            #joined-game-box
 
 
         #friends-panel.panel 
@@ -43,7 +40,7 @@ block content
             button(onclick='keepHand()') Next Hand
             button(onclick='rollAllDice()') Roll All Dice
             button(onclick='endTurn()') End Turn
-            button(onclick='startGame()') New Game
+            button#new-game-btn(onclick='startGame()') New Game
 
             #score-board    
                 .score-username Player 
@@ -53,21 +50,11 @@ block content
 
         #message-panel.panel
             .panel-header(onclick='togglePanel(this)') Messages 
-            <ul id="messages"></ul>
-            <form id="form" action="">
-                <input id="input" autocomplete="off" /><button>Send</button>
-            </form>
+            ul#messages
+            #message-box
+                input#message-input(autocomplete="off")
+                button#message-send-btn(onclick='sendMessage()') Send
 
-        #dice-panel.panel.collapsed
-            .panel-header(onclick='togglePanel(this)') Cosmetics
-
-        #users-panel.panel 
-            .panel-header(onclick='togglePanel(this)') Users
-
-            #user-list 
-                //- each user in user_list 
-                //-     .user-list-username.username= user.username
-                //-         +user-card(user)
 
 
 
@@ -75,4 +62,4 @@ block content
     
     <script src="/socket.io/socket.io.js"></script>
     script(src='/javascripts/dice.js')
-    script(src='/javascripts/dice-multiplayer.js')
+    //- script(src='/javascripts/dice-multiplayer.js')

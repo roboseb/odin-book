@@ -42,7 +42,7 @@ a {
     flex-grow: 1;
     min-height: 0px;
 
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 #navbar {

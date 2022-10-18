@@ -1,3 +1,164 @@
+var socket = io();
+// const roomKey = makeid(6);
+const roomKey = '111111';
+let currentKey = roomKey;
+let multi = false;
+
+let host = true;
+
+// Basic setup for if playing multiplayer.
+const keyBox = document.getElementById('key-box');
+if (keyBox) multi = true;
+
+const initialize = (() => {
+    if (!multi) return;
+
+    keyBox.innerText = `Current Room: ${roomKey}`;
+    multi = true;
+})();
+    
+// Initialize current room.
+socket.emit('join room', roomKey);
+
+// Receive socket info for starting new game.
+socket.on('new game', (newState) => {
+    console.log('starting new game...')
+
+    if (!host) {
+        let playerDice = state.player.dice;
+        let opponentDice = state.opponent.dice;
+
+        let tempState = newState;
+        tempState.player.dice = playerDice;
+        tempState.opponent.dice = opponentDice;
+
+        state = tempState;
+
+
+        startGame(state.turn);
+    }
+});
+
+// Roll a die when opponent sends dice rolling info.
+socket.on('roll die', (die, newState) => {
+
+    // Prevent double animating dice.
+    if (state.turn === 'player') return;
+
+    const box = document.getElementById('opponent-dice');
+    const newDie = {
+        die: box.querySelector(`#${die.id}`),
+        position: die.position
+    }
+
+    animateRoll(newDie);
+});
+
+socket.on('keep die', (position, kept, newState) => {
+    // Prevent double animating dice.
+    if (state.turn === 'player') return;
+
+    // Update local state based on opponent's keeps.
+    updateState(newState);
+
+    const box = document.getElementById('opponent-dice');
+    const newDie = {
+        die: box.querySelector(`#die-${position}`),
+        position: position
+    }
+
+    kept ? animateKeep(newDie, 'Unkeep') : animateKeep(newDie, 'Keep');
+    const handScore = document.getElementById('hand-score');
+
+    handScore.innerText = state.opponent.tempScore;
+});
+
+socket.on('count die', (position, kept, newState) => {
+
+    // Prevent double animating dice.
+    if (state.turn === 'player') return;
+
+    const box = document.getElementById('opponent-dice');
+    const newDie = box.querySelector(`#die-${position}`);
+
+    newDie.classList.add('counted');
+});
+
+// Animate opponent hovering over their dice.
+socket.on('mouseenter', (index, currentHost) => {
+    
+    console.log(host, currentHost);
+    if (host === currentHost) return;
+    console.log('hovering...')
+});
+
+// Animate opponent ending hovering over their dice.
+socket.on('mouseleave', (index, currentHost) => {
+    if (host === currentHost) return;
+    console.log('unhovering...')
+});
+
+// Take state passed from opponent and take only relevant info.
+const updateState = (opponentState) => {
+    const newState = Object.create(opponentState);
+
+    // Overwrite passed state with local dice DOM elements.
+    Object.keys(newState.player.dice).forEach(die => {
+        newState.player.dice[die].die = state.player.dice[die].die;
+    });
+
+    Object.keys(newState.opponent.dice).forEach(die => {
+        newState.opponent.dice[die].die = state.opponent.dice[die].die;
+    });
+
+    state = newState;
+}
+
+// Generate a random id.
+function makeid(length) {
+    var result = '';
+    var characters = '0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() *
+            charactersLength));
+    }
+    return result;
+}
+
+// Join a room using the inputted room key.
+const joinRoom = () => {
+    const keyInput = document.getElementById('join-game-input').value;
+    socket.emit('join room', keyInput);
+    keyBox.innerText = `Current Room: ${keyInput}`;
+
+    currentKey = keyInput;
+    host = false;
+
+    // If not hosting, take away the ability to start new game.
+    const newGameButton = document.getElementById('new-game-btn');
+    newGameButton.setAttribute('disabled', "");
+}
+
+// Send a message to other users sharing the same current room.
+const sendMessage = () => {
+    const input = document.getElementById('message-input');
+    socket.emit('message', input.value, currentKey);
+}
+
+// Add socket listener for receiving messages.
+socket.on('message', (text) => {
+    addMessage(text);
+});
+
+// Add a message to the local list of messages.
+const addMessage = (text) => {
+    const messageBox = document.getElementById('messages');
+    const message = document.createElement('li');
+    message.innerText = text;
+    messageBox.appendChild(message);
+}
+
 let state = {
     turn: null,
     running: false,
@@ -15,8 +176,6 @@ let state = {
         tempScore: 0
     }
 }
-
-let diceMade = false;
 
 // Die constructor.
 function Die(die) {
@@ -38,15 +197,16 @@ function Die(die) {
 // Create starting dice for the player and the opponent.
 const generateDice = (count) => {
     for (let i = 0; i < count; i++) {
-        generateDie('player-dice', 'khaki')
-        generateDie('opponent-dice', 'khaki')
+        generateDie('player-dice', 'khaki', i + 1)
+        generateDie('opponent-dice', 'khaki', i + 1)
     }
 }
 
 // Create a single die.
-const generateDie = (box, color) => {
+const generateDie = (box, color, index) => {
     const die = document.createElement('div');
-    die.classList.add('cube');
+    die.classList.add('cube', 'die');
+    die.id = `die-${index}`;
 
     // Create each face of the die.
     for (let i = 1; i < 7; i++) {
@@ -113,6 +273,15 @@ const generateDie = (box, color) => {
             });
         });
     }
+
+    // Animate player hovering over dice for the opponent.
+    die.addEventListener('mouseenter', () => {
+        socket.emit('mouseenter', currentKey, index, host);
+    });
+
+    die.addEventListener('mouseleave', () => {
+        socket.emit('mouseleave', currentKey, index, host);
+    });
 }
 
 // Check if the current player has gone bust after rolling all dice.
@@ -146,6 +315,9 @@ const rollDie = (dieObj, e) => {
     // Prevent rolling on keep button click.
     if (e && !e.target.classList.contains('cube__face')) return;
 
+    // Prevent rolling when not player's turn in multiplayer.
+    if (e && multi && state.turn !== 'player') return;
+
     // Prevent rolling a kept die.
     if (dieObj.kept) return;
 
@@ -155,6 +327,23 @@ const rollDie = (dieObj, e) => {
     dieObj.roll();
     dieObj.rolled = true;
 
+    animateRoll(dieObj);
+
+    processBust();
+
+    if (multi) {
+        // Send id of rolled die for animation purposes.
+        const object = {
+            id: dieObj['die'].id,
+            position: dieObj.position
+        }
+
+        socket.emit('roll die', currentKey, object, convertState(state));
+    }
+}
+
+// Animate rolling die with a set end position.
+const animateRoll = (dieObj) => {
     // Handle animations for rolling the die.
     dieObj.die.classList.remove('rolled-1', 'rolled-2', 'rolled-3', 'rolled-4', 'rolled-5', 'rolled-6', 'rolling');
     void dieObj.die.offsetWidth;
@@ -164,8 +353,6 @@ const rollDie = (dieObj, e) => {
         dieObj.die.classList.remove('rolling');
         dieObj.die.classList.add(`rolled-${dieObj.position}`, 'rolled');
     }, 500);
-
-    processBust();
 }
 
 // Roll all of a player's available dice at once.
@@ -246,12 +433,10 @@ const keepDie = (dieObj, e) => {
     // Deselect an already kept die;
     if (dieObj.kept) {
         dieObj.kept = false;
-        dieObj.die.classList.remove('kept');
-        e.target.innerText = 'Keep';
+        animateKeep(dieObj, 'Keep')
     } else {
         dieObj.kept = true;
-        dieObj.die.classList.add('kept');
-        e.target.innerText = 'Unkeep';
+        animateKeep(dieObj, 'Unkeep')
     }
 
     // Convert dice objects into an array.
@@ -262,7 +447,24 @@ const keepDie = (dieObj, e) => {
             dice.push(state[state.turn]['dice'][`die${i}`].position);
         }
     }
+
     updateHandScore(dice, true);
+
+    const dieNumber = dieObj.die.id.slice(4, 5);
+
+    socket.emit('keep die', currentKey, dieNumber, dieObj.kept, convertState(state));
+}
+
+// Animate keeping a die.
+const animateKeep = (dieObj, state) => {
+    const target = dieObj.die.querySelector(`.cube__face--${dieObj.position}`);
+
+    if (state === 'Keep') {
+        dieObj.die.classList.remove('kept');
+    } else if (state === 'Unkeep') {
+        dieObj.die.classList.add('kept');
+    }
+    target.querySelector('.keep-text').innerText = state;
 }
 
 // Set a die to the unrolled state and unstyle it.
@@ -273,6 +475,7 @@ const unrollDie = (dieObj) => {
 
 // Keep current player's hand and move to next roll.
 const keepHand = () => {
+
     const dice = state[state.turn]['dice'];
     let hand = [];
     let allKept = true;
@@ -292,6 +495,10 @@ const keepHand = () => {
             hand.push(dice[die].position);
             dice[die].counted = true;
             dice[die].die.classList.add('counted');
+
+            // Send data to opponent for animation.
+            const dieNumber = dice[die].die.id.slice(4, 5);
+            socket.emit('count die', currentKey, dieNumber, dice[die].kept, convertState(state));
         }
 
         if (!dice[die].kept) {
@@ -375,6 +582,7 @@ const checkForWin = () => {
 
 // Set the current turn to the passed player.
 const setTurn = (player) => {
+
     state.turn = player;
 
     // Reset current player's scores.
@@ -397,7 +605,9 @@ const setTurn = (player) => {
 // Reset all of passed player's dice and displayed dice.
 const resetDice = (player) => {
     const dice = state[player]['dice'];
+    
     Object.keys(dice).forEach(die => {
+
         dice[die]['die'].classList.remove('kept', 'rolled', 'counted',
             'rolled-1', 'rolled-2', 'rolled-3', 'rolled-4', 'rolled-5',
             'rolled-6');
@@ -415,20 +625,20 @@ const rollTurn = () => {
 
     const flip = Math.floor(Math.random() * 2);
     if (flip === 1) {
-        turn = 'player';
+        return 'player';
     } else {
-        turn = 'opponent';
+        return 'opponent';
     }
 
-    const rollTurn = () => {
-        setTurn(turn);
-        turn === 'player' ? turn = 'opponent' : turn = 'player';
-    }
+    // const localRoll = () => {
+    //     setTurn(turn);
+    //     turn === 'player' ? turn = 'opponent' : turn = 'player';
+    // }
 
-    const interval = setInterval(rollTurn, 150);
-    setTimeout(() => {
-        clearInterval(interval);
-    }, 150)
+    // const interval = setInterval(localRoll, 150);
+    // setTimeout(() => {
+    //     clearInterval(interval);
+    // }, 150)
 }
 
 // End the current turn, and then switch turn.
@@ -440,8 +650,6 @@ const endTurn = (bust) => {
     // If not bust, update score and score display.
     if (!bust) {
         state[state.turn]['score'] += state[state.turn]['handScore'] + state[state.turn]['tempScore'];
-
-        console.log(state[state.turn]['score']);
 
         const display = document.getElementById(`${state.turn}-score`);
         display.innerText = state[state.turn]['score'];
@@ -490,15 +698,18 @@ const sendModal = (message) => {
 }
 
 // Reset all parts of game state.
-const resetGame = () => {
-    state.turn = null;
+const resetGame = (player) => {
+
+    // If game resetting with a particular player, don't set turn to null.
+    player ? null : state.turn = null;
+
     state.running = false;
     state.lastTurn = false;
 
-    ['player', 'opponent'].forEach(player => {
-        state[player].score = 0;
-        state[player].handScore = 0;
-        state[player].tempScore = 0;
+    ['player', 'opponent'].forEach(option => {
+        state[option].score = 0;
+        state[option].handScore = 0;
+        state[option].tempScore = 0;
     });
 
     resetDice('player');
@@ -516,12 +727,47 @@ const resetGame = () => {
 }
 
 // Start a game of saiko kismet.
-const startGame = () => {
-    if (!diceMade) {
-        generateDice(6);
-        diceMade = true;
+const startGame = (player) => {
+
+    if (!host) {
     }
 
-    resetGame();
-    rollTurn();
+    resetGame('player');
+    resetGame('opponent');
+    
+
+    //Choose a random player to begin.
+    if (player) {
+        setTurn(player);
+    } else {
+        setTurn(rollTurn());
+    }
+
+    if (host && multi) {
+        socket.emit('new game', currentKey, convertState(state));
+    }
+
+    
 };
+
+// Convert state to be passed between players, to show the perspective shift.
+const convertState = (oldState) => {
+
+    // Copy state to newState without referencing.
+    let newState = Object.create(oldState);
+
+    newState.opponent = oldState.player;
+    newState.player = oldState.opponent;
+    
+    if (newState.turn === 'player') {
+        newState.turn = 'opponent';
+    } else {
+        newState.turn = 'player';
+    }
+
+    return newState; 
+}
+
+const diceInit = (() => {
+    generateDice(6);
+})();
