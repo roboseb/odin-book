@@ -201,7 +201,10 @@ const joinRoom = () => {
 
 // Add event listener to join game button.
 const joinGameButton = document.getElementById('join-game-btn');
-joinGameButton.addEventListener('click', joinRoom);
+if (joinGameButton) {
+    joinGameButton.addEventListener('click', joinRoom);
+}
+
 
 // Send a message to other users sharing the same current room.
 const sendMessage = () => {
@@ -211,7 +214,9 @@ const sendMessage = () => {
 
 // Add event listener to button for sending messages.
 const sendMessageButton = document.getElementById('message-send-btn');
-sendMessageButton.addEventListener('click', sendMessage);
+if (sendMessageButton) {
+    sendMessageButton.addEventListener('click', sendMessage);
+}
 
 // Add socket listener for receiving messages.
 socket.on('message', (text) => {
@@ -262,15 +267,21 @@ function Die(die) {
 }
 
 // Create starting dice for the player and the opponent.
-const generateDice = (count) => {
+const generateDice = (count, player, die) => {
     for (let i = 0; i < count; i++) {
-        generateDie('player-dice', 'khaki', i + 1)
-        generateDie('opponent-dice', 'khaki', i + 1)
+
+        // If non-default die passed, use it, otherwise use default.
+        if (die) {
+            generateDie(`${player}-dice`, 'khaki', i + 1, die)
+        } else {
+            generateDie(`${player}-dice`, 'khaki', i + 1)
+        }
+        
     }
 }
 
 // Create a single die.
-const generateDie = (box, color, index) => {
+const generateDie = (box, color, index, customDie) => {
     const die = document.createElement('div');
     die.classList.add('cube', 'die');
     die.id = `die-${index}`;
@@ -281,11 +292,30 @@ const generateDie = (box, color, index) => {
         dieFace.classList.add('cube__face', `cube__face--${i}`);
         dieFace.style.backgroundColor = color;
 
+        // Append a custom die base if any.
+        if (customDie) {
+            dieFace.style.backgroundImage = (`url('/images/bases/base_${customDie.base}.png')`)
+            dieFace.classList.add('custom_face');
+        }
+
         //Create each pip for each side of the die.
         for (let j = 1; j < i + 1; j++) {
             const pip = document.createElement('div');
             pip.classList.add('pip');
             dieFace.appendChild(pip);
+
+            if (customDie) {
+                pip.style.backgroundImage = (`url('/images/pips/pip_${customDie.pip}.png')`)
+                pip.classList.add('custom_pip');
+            }
+        }
+
+        // Append a custom die inlay if any.
+        if (customDie) {
+            const inlay = document.createElement('div');
+            inlay.classList.add('inlay');
+            inlay.style.backgroundImage = (`url('/images/inlays/inlay_${customDie.inlay}.png')`);
+            dieFace.appendChild(inlay);
         }
 
         // Add button for keeping die to each die face.
@@ -862,5 +892,14 @@ const convertState = (oldState) => {
 }
 
 const diceInit = (() => {
-    generateDice(6);
+    const skins = ['skull', 'heart', 'panel', 'hedron']
+
+    const die = {
+        pip: skins[Math.floor(Math.random() * skins.length)],
+        inlay: skins[Math.floor(Math.random() * skins.length)],
+        base: skins[Math.floor(Math.random() * skins.length)]
+    }
+
+    generateDice(6, 'player', die);
+    generateDice(6, 'opponent');
 })();

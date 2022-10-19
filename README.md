@@ -84,3 +84,6 @@ DONE-fix straights
 -rerandomize room key
 -fancy winning/losing animations
 -send bust/last turn/win modal through web socket
+-fix bust dice rolling both players animation bug
+-fix singleplayer dice bugs
+-fix facebook permissions issue

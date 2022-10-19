@@ -2,6 +2,7 @@ extends layout
 
 block content
     include user-card
+    include die
 
     #feed-panel.panel
         .panel-header Feed
@@ -113,14 +114,19 @@ block content
 
     #side-panels
 
-        #friends-panel.panel 
+        #friends-panel.panel.collapsed
             .panel-header(onclick='togglePanel(this)') Friends
 
-        #profile-panel.panel
+        #profile-panel.panel.collapsed
             .panel-header(onclick='togglePanel(this)') Profile
 
-        #dice-panel.panel.collapsed
+        #dice-panel.panel
             .panel-header(onclick='togglePanel(this)') Dice
+
+            #gacha-machine
+                #gacha-spout.hidden
+                    +die('khaki')
+                button#buy-die-btn Buy
 
         #users-panel.panel 
             .panel-header(onclick='togglePanel(this)') Users

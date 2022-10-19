@@ -375,8 +375,12 @@
     height: 20px;
     position: absolute;
     transform: translate(-50%, -50%);
-
     pointer-events: none;
+}
+
+.custom_pip {
+    background-color: transparent;
+    border-radius: 0%;
 }
 
 
@@ -568,4 +572,13 @@
 .die.hovered>.cube__face::after {
     filter: opacity(0.3);
     /* outline: 5px solid rgba(0, 128, 128, 0.787); */
+}
+
+.inlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    height: 100%;
+    width: 100%;
 }

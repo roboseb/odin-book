@@ -13,7 +13,7 @@ block content
 
 
         #dice-panel.panel
-            .panel-header(onclick='togglePanel(this)') Play Saiko Kismet
+            .panel-header Play Saiko Kismet
             #dice-box.scene
                 #opponent-box 
                     #opponent-dice
@@ -28,11 +28,11 @@ block content
 
 
         #friends-panel.panel 
-            .panel-header(onclick='togglePanel(this)') Dice
-            button(onclick='keepHand()') Next Hand
-            button(onclick='rollAllDice()') Roll All Dice
-            button(onclick='endTurn()') End Turn
-            button(onclick='startGame()') New Game
+            .panel-header Dice
+            button#keep-hand-btn Next Hand
+            button#roll-dice-btn Roll All Dice
+            button#end-turn-btn End Turn
+            button#new-game-btn New Game
 
             #score-board    
                 .score-username Player 
@@ -41,17 +41,17 @@ block content
                 #opponent-score 0
 
         #message-panel.panel
-            .panel-header(onclick='togglePanel(this)') Messages 
+            .panel-header Messages 
             <ul id="messages"></ul>
             <form id="form" action="">
                 <input id="input" autocomplete="off" /><button>Send</button>
             </form>
 
         #dice-panel.panel.collapsed
-            .panel-header(onclick='togglePanel(this)') Cosmetics
+            .panel-header Cosmetics
 
         #users-panel.panel 
-            .panel-header(onclick='togglePanel(this)') Users
+            .panel-header Users
 
             #user-list 
                 //- each user in user_list 

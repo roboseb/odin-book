@@ -374,3 +374,18 @@ a {
     gap: 5px;
     align-items: center;
 }
+
+
+#gacha-machine {
+    height: 100%;
+    width: 100%;
+    background-color: khaki;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#gacha-spout {
+    background-color: white;
+    flex-grow: 1;
+}
