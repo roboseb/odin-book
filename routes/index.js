@@ -1,7 +1,7 @@
 var express = require('express');
 const { new_comment_post, comment_like_post, comment_unlike_post } = require('../controllers/commentController');
 const { new_post_post, posts_get, post_like_post, post_unlike_post } = require('../controllers/postController');
-const { user_create_post, user_signin_post, user_signout_post, user_profile_get, friend_request_send_post, friend_request_accept_post, friend_remove_post } = require('../controllers/userController');
+const { user_create_post, user_signin_post, user_signout_post, user_profile_get, friend_request_send_post, friend_request_accept_post, friend_remove_post, die_add_post } = require('../controllers/userController');
 var router = express.Router();
 const passport = require("passport");
 
@@ -77,5 +77,7 @@ router.get(
     })
 );
 
+// POST request for purchasing a die.
+router.post('/dice/add', die_add_post);
 
 module.exports = router;

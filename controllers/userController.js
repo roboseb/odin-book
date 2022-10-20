@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Die = require('../models/die');
 const { validateConfirmPassword } = require('../validator')
 const bcrypt = require('bcryptjs');
 const passport = require("passport");
@@ -107,7 +108,7 @@ exports.friend_request_send_post = (req, res, next) => {
         user_friended(callback) {
             User.findOne({
                 username: req.user.username,
-                friends: { username: req.body.username}
+                friends: { username: req.body.username }
             }, callback);
         },
         user_requested(callback) {
@@ -262,6 +263,26 @@ exports.memberize_post = (req, res, next) => {
             console.log(err);
         } else {
             console.log("Updated Docs : ", docs);
+        }
+    });
+}
+
+exports.die_add_post = (req, res, next) => {
+    console.log('adding a die...');
+    console.log(req.user)
+
+    const newDie = JSON.parse(req.body.die)
+
+    const die = new Die(newDie);
+
+
+
+    User.updateOne({ _id: req.user._id }, { $push: { dice: die } }, function (err, results) {
+        console.log(results)
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Die added : ", die);
         }
     });
 }

@@ -2,6 +2,7 @@ extends layout
 
 block content
     include user-card
+    include die
 
     #profile-info 
         - var  imgSrc = `../images/icons/${user_preview.pic}.png`
@@ -16,7 +17,7 @@ block content
 
     #friends-panels
         #friends-panel.panel
-            .panel-header(onclick='togglePanel(this)') Friends
+            .panel-header Friends
 
             each friend in user_preview.friends 
                     a.user-list-username.username(href=`/users/${friend.username}`)= friend.username
@@ -24,18 +25,18 @@ block content
         
         if user && user_preview.username === user.username
             #outgoing-panel.panel 
-                .panel-header(onclick='togglePanel(this)') Outgoing Requests
+                .panel-header Outgoing Requests
                 if user.outgoingRequests.length > 0
                     each request in user.outgoingRequests
                         div= request
 
             #incoming-panel.panel 
-                .panel-header(onclick='togglePanel(this)') Incoming Requests
+                .panel-header Incoming Requests
                 if user.incomingRequests.length > 0
                     each request in user.incomingRequests
                         .accept-request-box
                             div= request
-                            button.accept-request-btn(onclick=`acceptFriend(event, ${JSON.stringify(request)})`) Accept Friend
+                            button#accept-request-btn(request=`${JSON.stringify(request)}`) Accept Friend
 
 
     #side-panels
@@ -54,30 +55,36 @@ block content
                     - friendText = 'Friend request sent'
                      .panel-header=friendText
                 else 
-                    .panel-header(onclick=`addFriend(${JSON.stringify(user_preview)})`)=friendText
+                    .panel-header#add-friend-panel(user=`${JSON.stringify(user_preview)}`)=friendText
 
 
             if isFriend
-                #remove-friend-btn.panel.collapsed
-                    .panel-header(onclick=`removeFriend(${JSON.stringify(user_preview)})`) Remove friend
+                #remove-friend-btn.panel.collapsed(user=`${JSON.stringify(user_preview)}`)
+                    .panel-header Remove friend
 
 
-        #friends-panel.panel 
-            .panel-header(onclick='togglePanel(this)') Dice
+        #dice-panel.panel 
+            .panel-header Dice
+            
+            #user-dice            
+                for die in user_preview.dice
+                    +die('khaki', die.pip, die.base, die.inlay, die.shine, die.pipped, die)
 
-        #profile-panel.panel
-            .panel-header(onclick='togglePanel(this)') Cards
 
-        #dice-panel.panel.collapsed
-            .panel-header(onclick='togglePanel(this)') Cosmetics
+
+        //- #profile-panel.panel
+        //-     .panel-header Cards
+
+        //- #dice-panel.panel.collapsed
+        //-     .panel-header Cosmetics
  
-        #users-panel.panel 
-            .panel-header(onclick='togglePanel(this)') Users
+        //- #users-panel.panel 
+        //-     .panel-header Users
 
-            #user-list 
-                //- each user in user_list 
-                //-     .user-list-username.username= user.username
-                //-         +user-card(user)
+        //-     #user-list 
+        //-         //- each user in user_list 
+        //-         //-     .user-list-username.username= user.username
+        //-         //-         +user-card(user)
 
 
 

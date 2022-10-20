@@ -11,6 +11,10 @@ html
     body
 
         #navbar 
+
+
+            #user-info(user=`${user ? JSON.stringify(user) : ''}`)
+
             a(href='/') Home
 
 

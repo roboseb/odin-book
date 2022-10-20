@@ -1,0 +1,13 @@
+mixin die-card(die)
+    if die
+        .die-card 
+
+            div= `Pips: ${die.pip}`
+            div= `Base: ${die.base}`
+            div= `Inlay: ${die.inlay}`
+
+            if die.pipped 
+                div Pipped! 
+            
+            if die.shine 
+                div Shiny!

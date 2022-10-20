@@ -62,6 +62,12 @@ October 19th, 2022
 
     Gonna try to give myself about four days on this one. Should be a decent amount of time to fully style the site, polish up some of the social stuff, and add all the custom dice shit to Kismet. I think custom dice is the only mechanic I can really add at this point, but it's already kinda implemented. Shouldn't be too hard.
 
+Ocotober 20th, 2022
+
+    Slept like dogshit two nights ago, but slept like tem hours last night. Hoping I can capitalize on that and do the rest of the complicated stuff today, so that I can polish up styling and minor details for the last couple days.
+
+    To-Do list is getting pretty big. Wonder how much of that I've done already, and how much of it will be left undone.
+
 
 ---To-Do---
 
@@ -92,3 +98,6 @@ DONE-fix straights
 -fix singleplayer dice bugs
 -fix facebook permissions issue
 -readd helmet and fix helmet errors
+-tweak pipped die odds
+-wager likes in multiplayer?
+-fix friends 500 error and pages not updating friend info immediately after change

@@ -1,13 +1,31 @@
-mixin die(color)
+mixin die(color, pip, base, inlay, shine, pipped, die)
+    include die-card
+
     .cube#die-1.die
         - var pipCounts = [1, 2, 3, 4, 5, 6]
             
         each count in pipCounts
-            .cube__face(class=`cube__face--${count}` style=`background-color: ${color}`)
+            .cube__face(class=`cube__face--${count}` style=`background-color: ${color}; background-image: ${ base ? "url('/images/bases/base_" + base + ".png')" : '' }`)
+                
                 - var n = 1;
                 while n < count + 1
-                    .pip
+                    - var classes = ''
+                    if pip 
+                        - classes += 'custom_pip'
+                    if pipped 
+                        - classes += ' pipped'
+
+                    .pip(style=`background-image: ${ pip ? "url('/images/pips/pip_" + pip + ".png')" : '' }` class=`${classes}`)
                     - n++
+
+                if inlay 
+                    .inlay(style=`background-image: url('/images/inlays/inlay_${inlay}.png')`)
+                
+                if shine 
+                    .shine
+                    
+            +die-card(die)
+
 
         - var n = 0;
         while n < 8

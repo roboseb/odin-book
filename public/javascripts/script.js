@@ -14,7 +14,15 @@ panels.forEach(header => {
 
 let friendAdded = false
 
-// Send friend request to passed user from logged in user.
+// Add event listener to button for adding a friend.
+const addFriendButton = document.getElementById('add-friend-panel');
+if (addFriendButton) {
+    addFriendButton.addEventListener('click', () => {
+        const user = JSON.parse(addFriendButton.getAttribute('user'));
+        addFriend(user);
+    })
+}
+
 const addFriend = (user) => {
     if (friendAdded) {
         alert('already added as friend');
@@ -34,7 +42,17 @@ const addFriend = (user) => {
     }
 }
 
+
 let friendRemoved = false;
+
+// Add event listener to button for removing a friend.
+const removeFriendButton = document.getElementById('remove-friend-btn');
+if (removeFriendButton) {
+    removeFriendButton.addEventListener('click', () => {
+        const user = JSON.parse(removeFriendButton.getAttribute('user'));
+        removeFriend(user);
+    })
+}
 
 // Send friend request to passed user from logged in user.
 const removeFriend = (user) => {
@@ -55,6 +73,15 @@ const removeFriend = (user) => {
     if (friendText.innerText === 'Remove friend') {
         friendText.innerText = 'Friend removed';
     }
+}
+
+// Add event listener to button for removing a friend.
+const acceptFriendButton = document.getElementById('accept-request-btn');
+if (acceptFriendButton) {
+    acceptFriendButton.addEventListener('click', (e) => {
+        const request = JSON.parse(acceptFriendButton.getAttribute('request'));
+        acceptFriend(e, request);
+    })
 }
 
 // Send friend request to passed user from logged in user.
@@ -206,6 +233,11 @@ const generateBasicDie = (box, color, index, customDie) => {
                 pip.style.backgroundImage = (`url('/images/pips/pip_${customDie.pip}.png')`)
                 pip.classList.add('custom_pip');
             }
+
+            if (customDie && customDie.pipped) {
+                pip.classList.add('pipped');
+                pip.style.animationDelay = `${100 * j}ms`;
+            }
         }
 
         // Append a custom die inlay if any.
@@ -214,6 +246,13 @@ const generateBasicDie = (box, color, index, customDie) => {
             inlay.classList.add('inlay');
             inlay.style.backgroundImage = (`url('/images/inlays/inlay_${customDie.inlay}.png')`);
             dieFace.appendChild(inlay);
+        }
+
+        //  Add shine effect to a die with three matching parts.
+        if (customDie && customDie.shine) {
+            const shine = document.createElement('div');
+            shine.classList.add('shine');
+            dieFace.appendChild(shine);
         }
 
         die.appendChild(dieFace);
@@ -245,53 +284,70 @@ let credits = 0;
 
 //Add event listener to button for buying and generating a new die.
 const dieBuyButton = document.getElementById('buy-die-btn');
-dieBuyButton.addEventListener('click', () => {
+if (dieBuyButton) {
+    dieBuyButton.addEventListener('click', () => {
     
-    // Prevent purchasing a die with no credits.
-    if (credits < 1) {
-        dieBuyButton.classList.remove('unafford', 'cranked');
+        // Prevent purchasing a die with no credits.
+        if (credits < 1) {
+            dieBuyButton.classList.remove('unafford', 'cranked');
+            void dieBuyButton.offsetHeight;
+            dieBuyButton.classList.add('unafford');
+            return;
+        }
+    
+        credits--;
+        const credDisplay = document.getElementById('gacha-credits');
+        credDisplay.innerText = credits.toString().padStart(2, '0');
+    
+    
+        lastDie = document.getElementById(`die-${generatedDice}`)
+        lastDie.classList.add('stored');
+    
+        const skins = ['skull', 'heart', 'panel', 'hedron']
+    
+        const die = {
+            pip: skins[Math.floor(Math.random() * skins.length)],
+            inlay: skins[Math.floor(Math.random() * skins.length)],
+            base: skins[Math.floor(Math.random() * skins.length)],
+            shine: false,
+            pipped: Math.floor(Math.random() * 4) === 1
+        }
+    
+        // Add sparkle effect if die's parts all match.
+        if (die.pip === die.inlay && die.pip === die.base) {
+            die.shine = true;
+        }
+    
+        generatedDice ++;
+        generateBasicDie('gacha-spout', 'khaki', generatedDice, die);
+    
+        dieBuyButton.classList.remove('cranked', 'unafford');
         void dieBuyButton.offsetHeight;
-        dieBuyButton.classList.add('unafford');
-        return;
-    }
+        dieBuyButton.classList.add('cranked');
+    
+        
+        // If user is signed in, save die to their account, and deduct likes.
+        const userInfo = document.getElementById('user-info');
+        let user = userInfo.getAttribute('user');
+        if (user !== '') {
+            user = JSON.parse(user);
+            sendData({ user: user, die: JSON.stringify(die) }, '/dice/add');
+            console.log(user);
+        }
+    });
+}
 
-    credits--;
-    const credDisplay = document.getElementById('gacha-credits');
-    credDisplay.innerText = credits.toString().padStart(2, '0');
-
-
-    lastDie = document.getElementById(`die-${generatedDice}`)
-    lastDie.classList.add('stored');
-
-    const skins = ['skull', 'heart', 'panel', 'hedron']
-
-    const die = {
-        pip: skins[Math.floor(Math.random() * skins.length)],
-        inlay: skins[Math.floor(Math.random() * skins.length)],
-        base: skins[Math.floor(Math.random() * skins.length)]
-    }
-
-    generatedDice ++;
-    generateBasicDie('gacha-spout', 'khaki', generatedDice, die);
-
-    dieBuyButton.classList.remove('cranked', 'unafford');
-    void dieBuyButton.offsetHeight;
-    dieBuyButton.classList.add('cranked');
-
-    const flap = document.getElementById('gacha-flap');
-    flap.classList.remove('flapped');
-    void flap.offsetHeight;
-    flap.classList.add('flapped');
-});
 
 // Add event listener for spenting likes on dice tokens.
 const slot = document.getElementById('gacha-slot');
-slot.addEventListener('click', () => {
-    slot.classList.remove('coined');
-    void slot.offsetHeight;
-    slot.classList.add('coined');
-
-    credits++;
-    const credDisplay = document.getElementById('gacha-credits');
-    credDisplay.innerText = credits.toString().padStart(2, '0');
-});
+if (slot) {
+    slot.addEventListener('click', () => {
+        slot.classList.remove('coined');
+        void slot.offsetHeight;
+        slot.classList.add('coined');
+    
+        credits++;
+        const credDisplay = document.getElementById('gacha-credits');
+        credDisplay.innerText = credits.toString().padStart(2, '0');
+    });
+}
