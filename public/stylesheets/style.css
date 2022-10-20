@@ -97,7 +97,12 @@ a {
 
 #friends-panel {}
 
-#dice-panel {}
+#dice-panel {
+    z-index: 2;
+
+    display: flex;
+    justify-content: center;
+}
 
 #side-panels {
     height: 100%;
@@ -105,6 +110,8 @@ a {
     display: flex;
     flex-direction: column;
     gap: 10px;
+
+    overflow: hidden;
 }
 
 #side-panels>.panel {
@@ -377,15 +384,302 @@ a {
 
 
 #gacha-machine {
+    background-color: rgb(53, 53, 53);
     height: 100%;
     width: 100%;
-    background-color: khaki;
+
+    max-width: 300px;
+    border-radius: 100% 100% 0 0;
 
     display: flex;
     flex-direction: column;
+
+    position: relative;
+}
+
+#gacha-top {
+    background-color: white;
+    flex-grow: 0.2;
+
+    border-radius: 100% 100% 0 0;
+}
+
+#gacha-glass {
+    z-index: 1;
+    background-color: rgba(177, 233, 255, 0.445);
+    flex-grow: 1;
+}
+
+#gacha-body {
+    z-index: 1;
+    background-color: pink;
+    padding-top: 20px;
+
+    display: flex;
+    justify-content: end;
+
+
+    transform: translateZ(200px);
+    perspective: 2000px;
+    perspective-origin: 50% 50%;
+
+    transform-style: preserve-3d;
+
+    clip-path: polygon(0% 0%, 0 42%, 0 100%, 10% 100%, 10% 50%, 50% 50%, 50% 100%, 81% 100%, 100% 100%, 100% 0%);
+}
+
+#gacha-bottom {
+    background-color: white;
+    flex-grow: 0.2;
 }
 
 #gacha-spout {
+    /* background: rgb(63,63,63);
+    background: linear-gradient(0deg, rgba(63,63,63,1) 0%, rgba(63,63,63,1) 47%, rgba(41, 41, 41, 0.8) 100%); */
+
+    position: absolute;
+    bottom: 0%;
+    left: 10%;
+
+    height: 80%;
+    width: 40%;
+    border-radius: 0px 0px 20px 20px;
+
+    display: flex;
+    justify-content: center;
+    align-items: end;
+
+    align-self: flex-end;
+
+    perspective: 2000px;
+    perspective-origin: 50% 50%;
+
+    transform: translateZ(-200px);
+
+    transform-style: preserve-3d;
+}
+
+#gacha-spout:hover {
+    z-index: 3;
+    background: rgba(63, 63, 63, 0);
+}
+
+#crank-slot-box {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: end;
+    gap: 10px;
+    padding-bottom: 10px;
+
+    width: 50%;
+}
+
+#slot-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#gacha-credits {
+    font-size: 2rem;
+    background-color: black;
+    width: 70%;
+    text-align: center;
+    border-radius: 10%;
+}
+
+#gacha-slot {
+    height: 35px;
+    width: 35px;
+    min-width: 35px;
+
+    background-color: grey;
+    border-radius: 100%;
+    position: relative;
+
+    cursor: pointer;
+}
+
+#gacha-spout>.die {
+    position: absolute;
+    z-index: 0;
+
+    animation: test 1s linear;
+}
+
+#gacha-spout>.die:hover {
+    transform: translateZ(500px) translateY(0px) rotateX(45deg) rotateZ(45deg);
+}
+
+@keyframes test {
+    0% {transform: translateZ(-1200px) translateY(-300%) rotateX(360deg) rotateY(360deg);}
+    50% {transform: translateZ(-900px) translateY(-100%) rotateX(250deg) rotateY(360deg);}
+    70% {transform: translateZ(50px) translateY(0px) rotateX(0deg) rotateY(360deg);}
+    75% {transform: translateZ(80px) translateY(-15%) rotateX(-20deg) rotateY(360deg);}
+    80% {transform: translateZ(100px) translateY(-25%) rotateX(-30deg) rotateY(360deg);}
+    100% {transform: translateZ(50px) translateY(0px) rotateX(0deg) rotateY(360deg);}
+}
+
+#slot-hole {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    background-color: black;
+    transform: translate(-50%, -50%);
+    height: 80%;
+    width: 20%;
+    border-radius: 20px;
+}
+
+#gacha-coin {
+    box-sizing: border-box;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    background-color: gold;
+    border: 3px solid rgb(141, 106, 17);
+    transform: translate(-50%, -50%);
+    height: 80%;
+    width: 80%;
+    border-radius: 100%; 
+    box-shadow: -5px 0px 0px rgb(141, 106, 17);
+
+    filter: opacity(0);
+}
+
+
+#gacha-slot.coined #gacha-coin {
+    animation: coined 0.3s;
+}
+
+@keyframes coined {
+    0% {
+        transform: translate(-50%, -150%) scaleX(1);
+        box-shadow: -5px 0px 0px rgb(141, 106, 17);
+        filter: opacity(1);
+    }
+    33% {
+        transform: translate(-50%, -50%) scaleX(1);
+        box-shadow: -5px 0px 0px rgb(141, 106, 17);
+        filter: opacity(1);
+    }
+    66% {
+        transform: translate(-50%, -50%) scaleX(0.3);
+        box-shadow: -15px 0px 0px rgb(141, 106, 17);
+        filter: opacity(1);
+    }
+
+    100% {
+        transform: translate(-50%, -0%) scaleX(0);
+        box-shadow: -15px 0px 0px rgb(141, 106, 17);
+        filter: opacity(0.5);
+    }
+}
+
+#buy-die-btn {
+    height: 70px;
+    width: 70px;
+
+    background-color: rgb(61, 61, 61);
+    border-radius: 100%;
+    position: relative;
+
+    cursor: pointer;
+    transform: rotate(0deg);
+    transition: all 0.2s;
+}
+
+#buy-die-btn:hover {
+    transform: rotate(25deg);
+}
+
+#buy-die-btn.cranked {
+    animation: cranked 0.6s;
+}
+
+@keyframes cranked {
+    0% {transform: rotate(0deg);}
+    75% {transform: rotate(360deg);}
+    90% {transform: rotate(330deg);}
+    100% {transform: rotate(360deg);}
+}
+
+#buy-die-btn.unafford {
+    animation: unafford 0.5s;
+}
+
+@keyframes unafford {
+    0% {transform: rotate(0deg);}
+    75% {transform: rotate(45deg);}
+    90% {transform: rotate(-25deg);}
+    100% {transform: rotate(0deg);}
+}
+
+#crank-handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
     background-color: white;
-    flex-grow: 1;
+    transform: translate(-50%, -50%);
+    height: 20%;
+    width: 80%;
+    border-radius: 20px;
+}
+
+.die.stored {
+    z-index: 2;
+    position: relative;
+    animation: stored 1.5s linear !important;
+
+    transform: translateY(2000px);
+}
+
+@keyframes stored {
+    0% {transform: translateZ(50px) translateY(0px) rotateX(0deg) rotateY(360deg); display: initial;}
+    45% {transform: translateZ(50px) translateY(0px) rotateX(0deg) rotateY(360deg); display: initial;}
+    100% {transform: translateZ(2000px) translateY(300px) rotateX(720deg) rotateY(360deg); display: initial}
+
+}
+
+#users-panel {
+    position: relative;
+    z-index: 1;
+}
+
+#gacha-flap {
+    position: absolute;
+    z-index: 3;
+    top: 60%;
+    left: 0%;
+
+    width: 100%;
+    height: 20%;
+
+    background-color: red;
+
+
+    transform-origin: top;
+    transform: translateZ(200px) rotateX(0deg);
+}
+
+#gacha-spout:hover #gacha-flap {
+    filter: opacity(0);
+}
+
+#gacha-flap.flapped {
+    animation: flapped 1s;
+    animation-delay: 0.5s;
+}
+
+@keyframes flapped {
+    0% {transform: translateZ(200px) rotateX(0deg);}
+    25% {transform: translateZ(200px) rotateX(45deg);}
+    50% {transform: translateZ(200px) rotateX(-15deg);}
+    75% {transform: translateZ(200px) rotateX(20deg);}
+    100% {transform: translateZ(200px) rotateX(0deg);}
 }

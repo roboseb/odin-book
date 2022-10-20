@@ -59,7 +59,7 @@ block content
 
                                     .post-date= recentDate ? `Today at ${hours}:${minutes} ${am ? 'am' : 'pm'}` : post.postDate.toLocaleDateString("en-US")
                                     .post-likes 
-                                        button(onclick=`likePost(${JSON.stringify(post)}, event, ${user ? JSON.stringify(user.username) : ''})`)= post.likedUsers.some(e => e.username === user.username) ? 'Unlike' : 'Like'
+                                        button.like-post-btn(username=`${user ? JSON.stringify(user.username) : ''}` post=`${JSON.stringify(post)}`)= post.likedUsers.some(e => e.username === user.username) ? 'Unlike' : 'Like'
                                         .post-like-count= post.likes
 
                             .post-content= post.content
@@ -104,8 +104,8 @@ block content
                                                             - minutes = `0${minutes}`
 
                                                     .comment-date= recentDate ? `Today at ${hours}:${minutes} ${am ? 'am' : 'pm'}` : comment.postDate.toLocaleDateString("en-US")
-                                                    .comment-likes 
-                                                        button(onclick=`likeComment(${JSON.stringify(comment)}, event, ${user ? JSON.stringify(user.username) : ''})`)= comment.likedUsers.some(e => e.username === user.username) ? 'Unlike' : 'Like'
+                                                    .comment-likes
+                                                        button.like-comment-btn(username=`${user ? JSON.stringify(user.username) : ''}` comment=`${JSON.stringify(comment)}`)= comment.likedUsers.some(e => e.username === user.username) ? 'Unlike' : 'Like'
                                                         .comment-like-count= comment.likes
                                             .comment-content= comment.comment
 
@@ -115,21 +115,39 @@ block content
     #side-panels
 
         #friends-panel.panel.collapsed
-            .panel-header(onclick='togglePanel(this)') Friends
+            .panel-header Friends
 
         #profile-panel.panel.collapsed
-            .panel-header(onclick='togglePanel(this)') Profile
+            .panel-header Profile
 
         #dice-panel.panel
-            .panel-header(onclick='togglePanel(this)') Dice
+            .panel-header Dice
 
             #gacha-machine
+                #gacha-top 
+                
                 #gacha-spout.hidden
                     +die('khaki')
-                button#buy-die-btn Buy
+                    #gacha-flap.flapped
+                #gacha-glass 
+                #gacha-body 
+                    #crank-slot-box
+                        #slot-box
+                            #gacha-slot
+                                #slot-hole
+                                #gacha-coin
+                            #gacha-credits 00
+                        #buy-die-btn
+                            #crank-handle
+
+                    
+
+                #gacha-bottom
+
+                
 
         #users-panel.panel 
-            .panel-header(onclick='togglePanel(this)') Users
+            .panel-header Users
 
             #user-list 
                 each user in user_list 

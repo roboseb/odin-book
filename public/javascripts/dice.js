@@ -538,6 +538,9 @@ const updateHandScore = (dice, shouldDisplay) => {
 
 // Set die object to kept and style it.
 const keepDie = (dieObj, e) => {
+    
+    // Prevent opponent's dice in multiplayer.
+    if (multi && state.turn !== 'player') return;
 
     // Deselect an already kept die;
     if (dieObj.kept) {

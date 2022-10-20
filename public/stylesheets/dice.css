@@ -406,8 +406,8 @@
     transform: translateZ(400px) rotateX(360deg) rotateY(360deg);
 }
 
-.cube.rolled-1>.cube__face:not(.cube__face--1) {
-    pointer-events: none;
+.cube.rolled-1>.cube__face:not(.cube__face--1)>.keep-btn {
+    display: none;
 }
 
 .cube.rolled-1.counted {
@@ -422,8 +422,8 @@
     transform: translateZ(400px) rotateX(360deg) rotateY(270deg);
 }
 
-.cube.rolled-2>.cube__face:not(.cube__face--2) {
-    pointer-events: none;
+.cube.rolled-2>.cube__face:not(.cube__face--2)>.keep-btn {
+    display: none;
 }
 
 .cube.rolled-2.counted {
@@ -438,8 +438,8 @@
     transform: translateZ(400px) rotateX(270deg) rotateY(360deg);
 }
 
-.cube.rolled-3>.cube__face:not(.cube__face--3) {
-    pointer-events: none;
+.cube.rolled-3>.cube__face:not(.cube__face--3)>.keep-btn {
+    display: none;
 }
 
 .cube.rolled-3.counted {
@@ -454,8 +454,8 @@
     transform: translateZ(400px) rotateX(450deg) rotateY(360deg);
 }
 
-.cube.rolled-4>.cube__face:not(.cube__face--4) {
-    pointer-events: none;
+.cube.rolled-4>.cube__face:not(.cube__face--4)>.keep-btn {
+    display: none;
 }
 
 .cube.rolled-4.counted {
@@ -470,8 +470,8 @@
     transform: translateZ(400px) rotateX(360deg) rotateY(450deg);
 }
 
-.cube.rolled-5>.cube__face:not(.cube__face--5) {
-    pointer-events: none;
+.cube.rolled-5>.cube__face:not(.cube__face--5)>.keep-btn {
+    display: none;
 }
 
 .cube.rolled-5.counted {
@@ -486,8 +486,8 @@
     transform: translateZ(400px) rotateX(540deg) rotateY(360deg) rotateZ(180deg);
 }
 
-.cube.rolled-6>.cube__face:not(.cube__face--6) {
-    pointer-events: none;
+.cube.rolled-6>.cube__face:not(.cube__face--6)>.keep-btn {
+    display: none;
 }
 
 .cube.rolled-6.counted {
@@ -581,4 +581,6 @@
 
     height: 100%;
     width: 100%;
+
+    pointer-events: none;
 }

@@ -65,7 +65,9 @@ const acceptFriend = (e, username) => {
 let likedComments = [];
 
 // Like a comment.
-const likeComment = (comment, e, username) => {
+const likeComment = (cmnt, event, username) => {
+    const comment = JSON.parse(cmnt);
+    const e = event.target
 
     // Add comment to likedComments, and process its liked state.
     if (!likedComments.some(e => e._id === comment._id)) {
@@ -82,7 +84,7 @@ const likeComment = (comment, e, username) => {
     let likeMod = 1;
     let route = '/comments/like';
 
-    if (likedComments.some(e => e._id === comment._id && e.liked === true)) {
+    if (e.innerText === 'Unlike') {
         likeMod = -1;
         route = '/comments/unlike';
 
@@ -99,17 +101,19 @@ const likeComment = (comment, e, username) => {
     sendData({ id: comment._id, username: comment.username }, route);
 
     // Locally update the displayed like count.
-    const likeBox = e.target.parentElement.querySelector('.comment-like-count');
+    const likeBox = e.parentElement.querySelector('.comment-like-count');
     likeBox.innerText = parseInt(likeBox.innerText) + likeMod;
 
     // Update text inside of like button.
-    likeMod === 1 ? e.target.innerText = 'Unlike' : e.target.innerText = 'Like';
+    likeMod === 1 ? e.innerText = 'Unlike' : e.innerText = 'Like';
 }
 
 let likedPosts = [];
 
 // Like a post.
-const likePost = (post, e, username) => {
+const likePost = (p, event, username) => {
+    const post = JSON.parse(p);
+    const e = event.target;
 
     // Add post to likedPosts, and process its liked state.
     if (!likedPosts.some(e => e._id === post._id)) {
@@ -126,7 +130,9 @@ const likePost = (post, e, username) => {
     let likeMod = 1;
     let route = '/posts/like';
 
-    if (likedPosts.some(e => e._id === post._id && e.liked === true)) {
+    if (e.innerText === 'Unlike') {
+        console.log('unliking....')
+
         likeMod = -1;
         route = '/posts/unlike';
 
@@ -143,11 +149,11 @@ const likePost = (post, e, username) => {
     sendData({ id: post._id, username: post.username }, route);
 
     // Locally update the displayed like count.
-    const likeBox = e.target.parentElement.querySelector('.post-like-count');
+    const likeBox = e.parentElement.querySelector('.post-like-count');
     likeBox.innerText = parseInt(likeBox.innerText) + likeMod;
 
     // Update text inside of like button.
-    likeMod === 1 ? e.target.innerText = 'Unlike' : e.target.innerText = 'Like';
+    likeMod === 1 ? e.innerText = 'Unlike' : e.innerText = 'Like';
 }
 
 // Send the data with data and action arguments.
@@ -171,3 +177,121 @@ const sendData = (data, action) => {
     // Send our FormData object; HTTP headers are set automatically
     XHR.send(FD);
 }
+
+// Create a single die.
+const generateBasicDie = (box, color, index, customDie) => {
+    const die = document.createElement('div');
+    die.classList.add('cube', 'die');
+    die.id = `die-${index}`;
+
+    // Create each face of the die.
+    for (let i = 1; i < 7; i++) {
+        const dieFace = document.createElement('div');
+        dieFace.classList.add('cube__face', `cube__face--${i}`);
+        dieFace.style.backgroundColor = color;
+
+        // Append a custom die base if any.
+        if (customDie) {
+            dieFace.style.backgroundImage = (`url('/images/bases/base_${customDie.base}.png')`)
+            dieFace.classList.add('custom_face');
+        }
+
+        //Create each pip for each side of the die.
+        for (let j = 1; j < i + 1; j++) {
+            const pip = document.createElement('div');
+            pip.classList.add('pip');
+            dieFace.appendChild(pip);
+
+            if (customDie) {
+                pip.style.backgroundImage = (`url('/images/pips/pip_${customDie.pip}.png')`)
+                pip.classList.add('custom_pip');
+            }
+        }
+
+        // Append a custom die inlay if any.
+        if (customDie) {
+            const inlay = document.createElement('div');
+            inlay.classList.add('inlay');
+            inlay.style.backgroundImage = (`url('/images/inlays/inlay_${customDie.inlay}.png')`);
+            dieFace.appendChild(inlay);
+        }
+
+        die.appendChild(dieFace);
+    }
+
+    // Add die to passed box argument.
+    const container = document.getElementById(box);
+    container.appendChild(die);
+}
+
+// Add event listener to button for liking a comment
+const likeCommentButtons = Array.from(document.querySelectorAll('.like-comment-btn'));
+likeCommentButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+        likeComment(button.getAttribute('comment'), e, button.getAttribute('username'));
+    });
+});
+
+// Add event listener to button for liking a post.
+const likePostButtons = Array.from(document.querySelectorAll('.like-post-btn'));
+likePostButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+        likePost(button.getAttribute('post'), e, button.getAttribute('username'));
+    });
+});
+
+let generatedDice = 1;
+let credits = 0;
+
+//Add event listener to button for buying and generating a new die.
+const dieBuyButton = document.getElementById('buy-die-btn');
+dieBuyButton.addEventListener('click', () => {
+    
+    // Prevent purchasing a die with no credits.
+    if (credits < 1) {
+        dieBuyButton.classList.remove('unafford', 'cranked');
+        void dieBuyButton.offsetHeight;
+        dieBuyButton.classList.add('unafford');
+        return;
+    }
+
+    credits--;
+    const credDisplay = document.getElementById('gacha-credits');
+    credDisplay.innerText = credits.toString().padStart(2, '0');
+
+
+    lastDie = document.getElementById(`die-${generatedDice}`)
+    lastDie.classList.add('stored');
+
+    const skins = ['skull', 'heart', 'panel', 'hedron']
+
+    const die = {
+        pip: skins[Math.floor(Math.random() * skins.length)],
+        inlay: skins[Math.floor(Math.random() * skins.length)],
+        base: skins[Math.floor(Math.random() * skins.length)]
+    }
+
+    generatedDice ++;
+    generateBasicDie('gacha-spout', 'khaki', generatedDice, die);
+
+    dieBuyButton.classList.remove('cranked', 'unafford');
+    void dieBuyButton.offsetHeight;
+    dieBuyButton.classList.add('cranked');
+
+    const flap = document.getElementById('gacha-flap');
+    flap.classList.remove('flapped');
+    void flap.offsetHeight;
+    flap.classList.add('flapped');
+});
+
+// Add event listener for spenting likes on dice tokens.
+const slot = document.getElementById('gacha-slot');
+slot.addEventListener('click', () => {
+    slot.classList.remove('coined');
+    void slot.offsetHeight;
+    slot.classList.add('coined');
+
+    credits++;
+    const credDisplay = document.getElementById('gacha-credits');
+    credDisplay.innerText = credits.toString().padStart(2, '0');
+});

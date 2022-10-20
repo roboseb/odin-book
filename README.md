@@ -58,6 +58,10 @@ October 18th, 2022
 
     Thinking that I can give this a bout one more week. As in, maybe five more working days. The game is very close to being fully functional online through web sockets. I think five days also gives me enough time to have custom dice generated that are cosmetic only. Any mechanic changes would probably add a decent amount of time to development, even if it's only a day or two. Wanna be done with everything by halloween weekend so that I can get plastered.
 
+October 19th, 2022
+
+    Gonna try to give myself about four days on this one. Should be a decent amount of time to fully style the site, polish up some of the social stuff, and add all the custom dice shit to Kismet. I think custom dice is the only mechanic I can really add at this point, but it's already kinda implemented. Shouldn't be too hard.
+
 
 ---To-Do---
 
@@ -87,3 +91,4 @@ DONE-fix straights
 -fix bust dice rolling both players animation bug
 -fix singleplayer dice bugs
 -fix facebook permissions issue
+-readd helmet and fix helmet errors
