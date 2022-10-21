@@ -115,3 +115,4 @@ DONE-fix straights
 -how to play section
 -about section
 -remove sign-in values
+-fix hostUser/guestUser declarations to work with multiple sets of games running.

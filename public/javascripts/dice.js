@@ -2,9 +2,11 @@ var socket = io();
 // const roomKey = makeid(6);
 const roomKey = '111111';
 let currentKey = roomKey;
+
+const userID = makeid(20);
 let multi = false;
 
-let host = true;
+let host = false;
 
 // If user is signed in, save die to their account, and deduct likes.
 const userInfo = document.getElementById('user-info');
@@ -25,17 +27,35 @@ const initialize = (() => {
 })();
 
 // Initialize current room.
-if (multi) {
-    socket.emit('join room', roomKey, user, host);
-}
+// if (multi) {
+//     socket.emit('join room', roomKey, user, host);
+// }
+
+let hostSet = false;
 
 // Socket listener for getting opponent information
-socket.on('join room', (user, isHost, hostUser, guestUser) => {
+socket.on('join room', (user, isHost, hostUser, guestUser, id) => {
+
+    if (id === userID && isHost  && !hostSet)  {
+        console.log('this user is hosting');
+        host = true;
+
+        hostSet = true;
+    } else if (!hostSet) {
+        
+        //If not hosting, take away the ability to start new game.
+        const newGameButton = document.getElementById('new-game-btn');
+        newGameButton.setAttribute('disabled', "");
+
+        hostSet = true;
+    }
 
     clearDice();
 
     let hostDice = hostUser ? hostUser.dice : null;
     let guestDice = guestUser ? guestUser.dice : null; 
+
+    console.log(hostDice, guestDice);
 
     if (host) {
         generateDice(6, 'player', hostDice);
@@ -100,7 +120,6 @@ socket.on('keep die', (position, kept, newState) => {
 });
 
 socket.on('count die', (position, kept, newState) => {
-
     // Prevent double animating dice.
     if (state.turn === 'player') return;
 
@@ -148,6 +167,7 @@ socket.on('mouseleave', (index, currentHost, box) => {
 
 // Receive info after opponent has passed the turn.
 socket.on('end turn', (newState, isHost) => {
+    
 
     // Prevent player who passed from repassing turn.
     if (isHost === host) return;
@@ -210,17 +230,12 @@ function makeid(length) {
 // Join a room using the inputted room key.
 const joinRoom = () => {
     const keyInput = document.getElementById('join-game-input').value;
-    socket.emit('join room', keyInput, user, host);
     keyBox.innerText = `Current Room: ${keyInput}`;
 
     currentKey = keyInput;
     host = false;
 
-    // If not hosting, take away the ability to start new game.
-    const newGameButton = document.getElementById('new-game-btn');
-    newGameButton.setAttribute('disabled', "");
-
-    socket.emit('join room', roomKey, user, host);
+    socket.emit('join room', roomKey, user, userID);
 }
 
 // Add event listener to join game button.

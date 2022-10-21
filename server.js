@@ -10,30 +10,37 @@ let guestUser;
 io.on('connection', (socket) => {
     console.log('a user connected');
 
-    socket.on('join room', (key, user, host) => {
+    socket.on('join room', (key, user, id) => {
         socket.join(key);
 
+        let userHosting = false;
 
+        console.log('host user is: ' + hostUser)
 
-
-        if (host) {
+        // Host has not been set yet, set user to host.
+        if (hostUser === undefined) {
+            console.log('host set')
             hostUser = user; 
-        } else if (!host) { 
+            userHosting = true;
+
+        // Host has been set, set user to guest.
+        } else if (hostUser !== undefined) { 
             guestUser = user;
+            console.log('guest set');
         }
 
-        if (guestUser) {
-            console.log('host dice: ')
-            console.log(guestUser.setDice[1]);
-        }
+        // if (guestUser) {
+        //     console.log('host dice: ')
+        //     console.log(guestUser.setDice[1]);
+        // }
 
-        if (hostUser) {
-            console.log('host dice: ')
-            console.log(hostUser.setDice[1]);
-        }
+        // if (hostUser) {
+        //     console.log('host dice: ')
+        //     console.log(hostUser.setDice[1]);
+        // }
         
 
-        io.to(key).emit('join room', user, host, hostUser, guestUser);
+        io.to(key).emit('join room', user, userHosting, hostUser, guestUser, id);
     });
 
 
