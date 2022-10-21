@@ -36,6 +36,9 @@ let hostSet = false;
 // Socket listener for getting opponent information
 socket.on('join room', (user, isHost, hostUser, guestUser, id) => {
 
+    console.log('hostSet: ' + hostSet);
+    console.log('isHost: ' + isHost);
+
     if (id === userID && isHost  && !hostSet)  {
         console.log('this user is hosting');
         host = true;
