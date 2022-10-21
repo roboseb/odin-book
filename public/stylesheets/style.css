@@ -720,7 +720,7 @@ a {
     100% {transform: translate(-50%, -50%) scale(1);}
 }
 
-#user-dice {
+#user-dice, #equipped-dice {
     height: 100%;
     width: 100%;
     padding: 20px;
@@ -735,11 +735,9 @@ a {
     perspective-origin: 50% 50%;
 
     transform-style: preserve-3d;
-
-    
 }
 
-#user-dice>.die:hover {
+#user-dice>.die:hover, #equipped-dice>.die:hover {
     transform: translateZ(200px) translateY(0px) rotateX(45deg) rotateZ(45deg);
 }
 

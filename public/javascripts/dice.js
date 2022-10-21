@@ -55,8 +55,8 @@ socket.on('join room', (user, isHost, hostUser, guestUser, id) => {
 
     clearDice();
 
-    let hostDice = hostUser ? hostUser.dice : null;
-    let guestDice = guestUser ? guestUser.dice : null; 
+    let hostDice = hostUser ? hostUser.setDice : null;
+    let guestDice = guestUser ? guestUser.setDice : null; 
 
     console.log(hostDice, guestDice);
 
