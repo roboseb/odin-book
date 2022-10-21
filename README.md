@@ -71,22 +71,22 @@ Ocotober 20th, 2022
 
 ---To-Do---
 
--user authentication
--sign in with facebook
+DONE-user authentication
+DONE-sign in with facebook
 -change session secret
--fix collapsed panel gap
+DONE-fix collapsed panel gap
 -prevent signing up with same username
 -finalize by cleaning up code
--like button (only able to like others' posts + only one like?)
--standalone profile page
+DONE-like button (only able to like others' posts + only one like?)
+DONE-standalone profile page
 -fix friend accepting not refreshing
--unlike posts on click
+DONE-unlike posts on click
 -cancel friend request
 -fix double friending?
 -replace localhost references
 -update site callback on facebook dev page
--sort post feed by date (combined user posts sorting)
--roll all button
+DONE-sort post feed by date (combined user posts sorting)
+DONE-roll all button
 -pokemon style idle animation
 DONE-fix straights
 -choose score to play to
@@ -101,3 +101,6 @@ DONE-fix straights
 -tweak pipped die odds
 -wager likes in multiplayer?
 -fix friends 500 error and pages not updating friend info immediately after change
+-delete all old posts
+-add custom dice to multiplayer
+-add ability to unset custom dice

@@ -1,4 +1,4 @@
-mixin die(color, pip, base, inlay, shine, pipped, die)
+mixin die(color, pip, base, inlay, shine, pipped, die, preview_name, user_name)
     include die-card
 
     .cube#die-1.die
@@ -23,8 +23,8 @@ mixin die(color, pip, base, inlay, shine, pipped, die)
                 
                 if shine 
                     .shine
-                    
-            +die-card(die)
+            if user_name === preview_name
+                +die-card(die)
 
 
         - var n = 0;

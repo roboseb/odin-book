@@ -337,7 +337,6 @@ if (dieBuyButton) {
     });
 }
 
-
 // Add event listener for spenting likes on dice tokens.
 const slot = document.getElementById('gacha-slot');
 if (slot) {
@@ -351,3 +350,35 @@ if (slot) {
         credDisplay.innerText = credits.toString().padStart(2, '0');
     });
 }
+
+const setDieButtons = Array.from(document.querySelectorAll('.set-die-btn'));
+setDieButtons.forEach(die => {
+    die.addEventListener('click', () => {
+        const index = parseInt(die.id.slice(-5, -4));
+
+        const userInfo = document.getElementById('user-info');
+        let user = JSON.parse(userInfo.getAttribute('user'));
+
+        let dieUsed = false;
+
+        Object.keys(user.setDice).forEach(slot => {
+
+            if (user.setDice[slot] !== null && user.setDice[slot]._id ===
+                JSON.parse(die.getAttribute('die'))._id) {
+                    dieUsed = true;
+                }
+        });
+
+        if (dieUsed) {
+            console.log('This die is being used!');
+            return;
+        }
+
+        if (user.setDice[index] !== null) {
+            console.log('This slot is being used!');
+            return;
+        }
+
+        sendData({die: die.getAttribute('die'), index: index}, '/dice/set')
+    });
+});

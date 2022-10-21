@@ -31,6 +31,14 @@ exports.user_create_post = [
                 admin: false,
                 pic: req.body.pic,
                 dice: [],
+                setDice: {
+                    1: null,
+                    2: null,
+                    3: null,
+                    4: null,
+                    5: null,
+                    6: null
+                },
                 cards: [],
                 cosmetics: [],
                 joinDate: new Date(),
@@ -64,6 +72,14 @@ exports.user_create_post = [
                             admin: false,
                             pic: req.body.pic,
                             dice: [],
+                            setDice: {
+                                1: null,
+                                2: null,
+                                3: null,
+                                4: null,
+                                5: null,
+                                6: null
+                            },
                             cards: [],
                             cosmetics: [],
                             joinDate: new Date(),
@@ -267,6 +283,7 @@ exports.memberize_post = (req, res, next) => {
     });
 }
 
+// Add a die to user's list of dice.
 exports.die_add_post = (req, res, next) => {
     console.log('adding a die...');
     console.log(req.user)
@@ -283,6 +300,31 @@ exports.die_add_post = (req, res, next) => {
             console.log(err);
         } else {
             console.log("Die added : ", die);
+        }
+    });
+}
+
+// Set a die to a specific position in the user's favourite dice.
+exports.die_set_post = (req, res, next) => {
+    console.log('setting a die...');
+    console.log(req.user._id);
+    console.log(req.body.index);
+    console.log(req.body.die);
+
+    User.findById(req.user._id, function (err, result) {
+        if (err) {
+            console.log(err);
+        } else {
+            const dice = result.setDice
+            dice[req.body.index] = JSON.parse(req.body.die);
+
+            User.findByIdAndUpdate(req.user._id, {setDice: dice}, function (err, res) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Die set");
+                }
+            });
         }
     });
 }

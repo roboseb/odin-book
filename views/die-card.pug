@@ -11,3 +11,11 @@ mixin die-card(die)
             
             if die.shine 
                 div Shiny!
+
+            .die-card-options 
+                button.set-die-btn#set-1-btn(die=`${JSON.stringify(die)}`) Set as 1st die 
+                button.set-die-btn#set-2-btn(die=`${JSON.stringify(die)}`) Set as 2nd die 
+                button.set-die-btn#set-3-btn(die=`${JSON.stringify(die)}`) Set as 3rd die 
+                button.set-die-btn#set-4-btn(die=`${JSON.stringify(die)}`) Set as 4th die 
+                button.set-die-btn#set-5-btn(die=`${JSON.stringify(die)}`) Set as 5th die 
+                button.set-die-btn#set-6-btn(die=`${JSON.stringify(die)}`) Set as 6th die

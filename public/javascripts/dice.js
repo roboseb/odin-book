@@ -267,12 +267,12 @@ function Die(die) {
 }
 
 // Create starting dice for the player and the opponent.
-const generateDice = (count, player, die) => {
+const generateDice = (count, player, dice) => {
     for (let i = 0; i < count; i++) {
 
         // If non-default die passed, use it, otherwise use default.
-        if (die) {
-            generateDie(`${player}-dice`, 'khaki', i + 1, die)
+        if (dice && dice[i] !== null) {
+            generateDie(`${player}-dice`, 'khaki', i + 1, dice[i])
         } else {
             generateDie(`${player}-dice`, 'khaki', i + 1)
         }
@@ -903,6 +903,15 @@ const diceInit = (() => {
         base: skins[Math.floor(Math.random() * skins.length)]
     }
 
-    generateDice(6, 'player', die);
+    let dice = null;
+
+    // Set up custom dice if user is signed in.
+    const userInfo = document.getElementById('user-info');
+    if (userInfo.getAttribute('user') !== '') {
+        let user = JSON.parse(userInfo.getAttribute('user'));
+        dice = user.setDice;
+    }
+
+    generateDice(6, 'player', dice);
     generateDice(6, 'opponent');
 })();

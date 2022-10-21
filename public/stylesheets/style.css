@@ -755,7 +755,7 @@ a {
     padding: 10px;
 
 
-    transform: translate(0%, 0%) rotateX(-90deg) translateZ(-50px) rotateY(20deg);
+    transform: translate(-50%, -50%) translateZ(100px) rotateZ(-45deg)  rotateY(0deg);
     pointer-events: none;
 }
 
@@ -768,3 +768,7 @@ a {
     pointer-events: all;
 }
 
+.die-card-options {
+    display: flex;
+    flex-direction: column;
+}

@@ -8,6 +8,7 @@ const UserSchema = new Schema(
         pic: { type: String, required: true },
         admin: { type: Boolean },
         dice: [],
+        setDice: { type: Object, required: true },
         cards: [],
         cosmetics: [],
         joinDate: { type: Date, required: true },

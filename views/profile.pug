@@ -68,7 +68,8 @@ block content
             
             #user-dice            
                 for die in user_preview.dice
-                    +die('khaki', die.pip, die.base, die.inlay, die.shine, die.pipped, die)
+
+                    +die('khaki', die.pip, die.base, die.inlay, die.shine, die.pipped, die, user_preview.username, user ? user.username : null)
 
 
 
