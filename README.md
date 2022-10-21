@@ -68,6 +68,14 @@ Ocotober 20th, 2022
 
     To-Do list is getting pretty big. Wonder how much of that I've done already, and how much of it will be left undone.
 
+October 21st, 2022
+
+    Two days left, if all goes well on this project. Two big things I want to get done before I start with proper styling today. First, having custom dice show up in multiplayer games, since I already have them working in local games. Second, having profiles reload when sending some sort of request to properly update friends and dice, since that shit apparently only works when signing out and back in. (Note to me: seems that the user object just doesn't get updated until signed out/in?)
+
+    So I'm having some sort of massive issue where certain errors are just being swalled, and not being logged anywhere. So what I have to do is notice there's an error, and then play a little archaeology/scavenger hunt to find the issue. Is this the most effective way? No. Do I have time to figure out what the issue with the issue finder is? Not at this very moment. Regardless, I now have big item the first working, which is having custom dice show up in multiplayer.
+
+    Sure seems that I'm running into issues with testing multiplayer games with two users signed in from one machine. Basically whoever signs in last is sign in on both machines. This'll be a bitch to test.
+
 
 ---To-Do---
 
@@ -104,3 +112,6 @@ DONE-fix straights
 -delete all old posts
 -add custom dice to multiplayer
 -add ability to unset custom dice
+-how to play section
+-about section
+-remove sign-in values

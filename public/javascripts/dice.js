@@ -6,6 +6,13 @@ let multi = false;
 
 let host = true;
 
+// If user is signed in, save die to their account, and deduct likes.
+const userInfo = document.getElementById('user-info');
+let user = userInfo.getAttribute('user');
+if (user !== '') {
+    user = JSON.parse(user);
+}
+
 // Basic setup for if playing multiplayer.
 const keyBox = document.getElementById('key-box');
 if (keyBox) multi = true;
@@ -16,9 +23,28 @@ const initialize = (() => {
     keyBox.innerText = `Current Room: ${roomKey}`;
     multi = true;
 })();
-    
+
 // Initialize current room.
-socket.emit('join room', roomKey);
+if (multi) {
+    socket.emit('join room', roomKey, user, host);
+}
+
+// Socket listener for getting opponent information
+socket.on('join room', (user, isHost, hostUser, guestUser) => {
+
+    clearDice();
+
+    let hostDice = hostUser ? hostUser.dice : null;
+    let guestDice = guestUser ? guestUser.dice : null; 
+
+    if (host) {
+        generateDice(6, 'player', hostDice);
+        generateDice(6, 'opponent', guestDice);
+    } else {
+        generateDice(6, 'player', guestDice);
+        generateDice(6, 'opponent', hostDice)
+    }
+});
 
 // Receive socket info for starting new game.
 socket.on('new game', (newState) => {
@@ -86,7 +112,7 @@ socket.on('count die', (position, kept, newState) => {
 
 // Animate opponent hovering over their dice.
 socket.on('mouseenter', (index, currentHost, box) => {
-    
+
     // Prevent animating dice for player hovering.
     if (host === currentHost) return;
 
@@ -122,11 +148,9 @@ socket.on('mouseleave', (index, currentHost, box) => {
 
 // Receive info after opponent has passed the turn.
 socket.on('end turn', (newState, isHost) => {
-    console.log(newState);
-    
+
     // Prevent player who passed from repassing turn.
     if (isHost === host) return;
-    console.log('getting the turn...')
 
     let playerDice = state.player.dice;
     let opponentDice = state.opponent.dice;
@@ -169,8 +193,6 @@ const updateState = (opponentState) => {
     });
 
     state = newState;
-
-    console.log(state.player.dice);
 }
 
 // Generate a random id.
@@ -188,7 +210,7 @@ function makeid(length) {
 // Join a room using the inputted room key.
 const joinRoom = () => {
     const keyInput = document.getElementById('join-game-input').value;
-    socket.emit('join room', keyInput);
+    socket.emit('join room', keyInput, user, host);
     keyBox.innerText = `Current Room: ${keyInput}`;
 
     currentKey = keyInput;
@@ -197,14 +219,15 @@ const joinRoom = () => {
     // If not hosting, take away the ability to start new game.
     const newGameButton = document.getElementById('new-game-btn');
     newGameButton.setAttribute('disabled', "");
+
+    socket.emit('join room', roomKey, user, host);
 }
 
 // Add event listener to join game button.
 const joinGameButton = document.getElementById('join-game-btn');
 if (joinGameButton) {
-    joinGameButton.addEventListener('click', joinRoom);
+    joinGameButton.addEventListener('click', () => joinRoom());
 }
-
 
 // Send a message to other users sharing the same current room.
 const sendMessage = () => {
@@ -268,20 +291,22 @@ function Die(die) {
 
 // Create starting dice for the player and the opponent.
 const generateDice = (count, player, dice) => {
-    for (let i = 0; i < count; i++) {
+    
 
+    for (let i = 0; i < count; i++) {
+        
         // If non-default die passed, use it, otherwise use default.
         if (dice && dice[i] !== null) {
-            generateDie(`${player}-dice`, 'khaki', i + 1, dice[i])
+            generateDie(`${player}-dice`, 'khaki', i + 1, dice[i]);
         } else {
-            generateDie(`${player}-dice`, 'khaki', i + 1)
+            generateDie(`${player}-dice`, 'khaki', i + 1);
         }
-        
     }
 }
 
 // Create a single die.
 const generateDie = (box, color, index, customDie) => {
+
     const die = document.createElement('div');
     die.classList.add('cube', 'die');
     die.id = `die-${index}`;
@@ -308,6 +333,11 @@ const generateDie = (box, color, index, customDie) => {
                 pip.style.backgroundImage = (`url('/images/pips/pip_${customDie.pip}.png')`)
                 pip.classList.add('custom_pip');
             }
+
+            if (customDie && customDie.pipped) {
+                pip.style.animationDelay = `${100 * j}ms`;
+                pip.classList.add('pipped');
+            }
         }
 
         // Append a custom die inlay if any.
@@ -316,6 +346,12 @@ const generateDie = (box, color, index, customDie) => {
             inlay.classList.add('inlay');
             inlay.style.backgroundImage = (`url('/images/inlays/inlay_${customDie.inlay}.png')`);
             dieFace.appendChild(inlay);
+        }
+
+        if (customDie && customDie.shine) {
+            const shine = document.createElement('div');
+            shine.classList.add('shine');
+            dieFace.appendChild(shine);
         }
 
         // Add button for keeping die to each die face.
@@ -373,10 +409,14 @@ const generateDie = (box, color, index, customDie) => {
 
     // Animate player hovering over dice for the opponent.
     die.addEventListener('mouseenter', () => {
+        // Don't emit if not playing in multiplayer.
+        if (!multi) return;
         socket.emit('mouseenter', currentKey, index, host, box);
     });
 
     die.addEventListener('mouseleave', () => {
+        // Don't emit if not playing in multiplayer.
+        if (!multi) return;
         socket.emit('mouseleave', currentKey, index, host, box);
     });
 }
@@ -488,6 +528,8 @@ const updateHandScore = (dice, shouldDisplay) => {
     let score = 0;
     let straight = true;
 
+    console.log(dice);
+
     const counts = {
         1: 0,
         2: 0,
@@ -506,8 +548,6 @@ const updateHandScore = (dice, shouldDisplay) => {
     for (let i = 1; i < 7; i++) {
         if (!counts[i]) straight = false;
     }
-
-
 
     // Calculate score for triples and singles.
     Object.keys(counts).forEach(count => {
@@ -538,8 +578,8 @@ const updateHandScore = (dice, shouldDisplay) => {
 
 // Set die object to kept and style it.
 const keepDie = (dieObj, e) => {
-    
-    // Prevent opponent's dice in multiplayer.
+
+    // Prevent keeping opponent's dice in multiplayer.
     if (multi && state.turn !== 'player') return;
 
     // Deselect an already kept die;
@@ -564,6 +604,8 @@ const keepDie = (dieObj, e) => {
 
     const dieNumber = dieObj.die.id.slice(4, 5);
 
+    // Don't emit if not playing in multiplayer.
+    if (!multi) return;
     socket.emit('keep die', currentKey, dieNumber, dieObj.kept, convertState(state));
 }
 
@@ -610,7 +652,11 @@ const keepHand = () => {
 
             // Send data to opponent for animation.
             const dieNumber = dice[die].die.id.slice(4, 5);
-            socket.emit('count die', currentKey, dieNumber, dice[die].kept, convertState(state));
+
+            if (multi) {
+                socket.emit('count die', currentKey, dieNumber, dice[die].kept, convertState(state));
+            }
+
         }
 
         if (!dice[die].kept) {
@@ -655,7 +701,7 @@ const checkHandValidity = () => {
             diceKept = true;
         }
     });
-    
+
     if (!diceKept) {
         sendModal('You need to keep at least one die!');
         return false;
@@ -721,7 +767,7 @@ const setTurn = (player) => {
 // Reset all of passed player's dice and displayed dice.
 const resetDice = (player) => {
     const dice = state[player]['dice'];
-    
+
     Object.keys(dice).forEach(die => {
 
         dice[die]['die'].classList.remove('kept', 'rolled', 'counted',
@@ -795,8 +841,11 @@ const endTurn = (bust) => {
     }
 
     checkForWin();
-    
+
     state.turn === 'player' ? setTurn('opponent') : setTurn('player');
+
+    // Don't emit if not playing in multiplayer.
+    if (!multi) return;
     socket.emit('end turn', currentKey, convertState(state), host);
 }
 
@@ -856,7 +905,7 @@ const startGame = (player) => {
     }
 
     resetGame();
-    
+
 
     //Choose a random player to begin.
     if (player) {
@@ -876,7 +925,7 @@ newGameButton.addEventListener('click', () => startGame(false));
 
 // Convert state to be passed between players, to show the perspective shift.
 const convertState = (oldState) => {
-    
+
     // Copy oldstate but swap player and opponent data.
     let newState = {
         turn: state.turn,
@@ -891,17 +940,11 @@ const convertState = (oldState) => {
     } else {
         newState.turn = 'player';
     }
-    return newState; 
+    return newState;
 }
 
+// Generate six dice for each player.
 const diceInit = (() => {
-    const skins = ['skull', 'heart', 'panel', 'hedron']
-
-    const die = {
-        pip: skins[Math.floor(Math.random() * skins.length)],
-        inlay: skins[Math.floor(Math.random() * skins.length)],
-        base: skins[Math.floor(Math.random() * skins.length)]
-    }
 
     let dice = null;
 
@@ -915,3 +958,14 @@ const diceInit = (() => {
     generateDice(6, 'player', dice);
     generateDice(6, 'opponent');
 })();
+
+// Delete all dice objects in the DOM.
+const clearDice = () => {
+    const dice = Array.from(document.querySelectorAll('.die'));
+    dice.forEach(die => {
+        die.remove();
+    });
+
+    state.player.dice = {};
+    state.opponent.dice = {};
+}

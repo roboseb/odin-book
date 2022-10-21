@@ -16,17 +16,20 @@ html
             #user-info(user=`${user ? JSON.stringify(user) : ''}`)
 
             a(href='/') Home
+            a(href='/dice') Play Dice Locally
+            a(href='/dice/multiplayer') Play Dice Online
 
 
             if user 
                 a(href=`/users/${user.username}`)= user.username
-                a(href='/dice') Play Dice
+                
+                
                 a(href='/sign-out') Sign Out
 
             else 
                 a(href='/sign-up') Sign Up/Sign In
                 div Please sign in
-                a(href='/dice/multiplayer') Play Dice with Friends
+                
 
         #main-content
             block content

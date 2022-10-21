@@ -3,13 +3,37 @@ const socketapi = {
     io: io
 };
 
+let hostUser;
+let guestUser;
+
 // Add your socket.io logic here!
 io.on('connection', (socket) => {
     console.log('a user connected');
 
-    socket.on('join room', (key) => {
+    socket.on('join room', (key, user, host) => {
         socket.join(key);
-        console.log(key);
+
+
+
+
+        if (host) {
+            hostUser = user; 
+        } else if (!host) { 
+            guestUser = user;
+        }
+
+        if (guestUser) {
+            console.log('host dice: ')
+            console.log(guestUser.setDice[1]);
+        }
+
+        if (hostUser) {
+            console.log('host dice: ')
+            console.log(hostUser.setDice[1]);
+        }
+        
+
+        io.to(key).emit('join room', user, host, hostUser, guestUser);
     });
 
 
