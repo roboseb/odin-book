@@ -26,7 +26,7 @@ io.on('connection', (socket) => {
 
 
         // Room has not been created, make room and set user as host.
-        if (rooms[key] === undefined) {
+        if (rooms[key] === undefined || rooms[key]['hostUser'] === null) {
             rooms[key] = new Room();
             rooms[key]['hostUser'] = user; 
             rooms[key]['hostID'] = socketID; 
