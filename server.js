@@ -3,49 +3,79 @@ const socketapi = {
     io: io
 };
 
-let hostUser;
-let guestUser;
+// Room constructor.
+function Room() {
+    this.hostUser = null;
+    this.guestUser = null;
+    this.hostID = null;
+    this.guestID = null;
+}
+
+let rooms = {};
 
 // Add your socket.io logic here!
 io.on('connection', (socket) => {
     console.log('a user connected');
 
-    socket.on('join room', (key, user, id) => {
+    const socketID = socket.id;
+
+    socket.on('join room', (key, user, id,) => {
         socket.join(key);
 
         let userHosting = false;
 
-        console.log('host user is: ' + hostUser)
 
-        // Host has not been set yet, set user to host.
-        if (hostUser === undefined) {
-            console.log('host set')
-            hostUser = user; 
+        // Room has not been created, make room and set user as host.
+        if (rooms[key] === undefined) {
+            rooms[key] = new Room();
+            rooms[key]['hostUser'] = user; 
+            rooms[key]['hostID'] = socketID; 
             userHosting = true;
 
         // Host has been set, set user to guest.
-        } else if (hostUser !== undefined) { 
-            guestUser = user;
-            console.log('guest set');
+        } else if (rooms[key]['guestUser'] === null) { 
+            rooms[key]['guestUser'] = user;
+            rooms[key]['guestID'] = socketID; 
         }
 
-        // if (guestUser) {
-        //     console.log('host dice: ')
-        //     console.log(guestUser.setDice[1]);
-        // }
-
-        // if (hostUser) {
-        //     console.log('host dice: ')
-        //     console.log(hostUser.setDice[1]);
-        // }
-        
-
-        io.to(key).emit('join room', user, userHosting, hostUser, guestUser, id);
+        io.to(key).emit('join room', user, userHosting, rooms[key]['hostUser'], rooms[key]['guestUser'], id, rooms[key]);
     });
 
-
+    // Clear both host and guest user.
     socket.on('disconnect', () => {
         console.log('user disconnected');
+
+        Object.keys(rooms).forEach(key => {
+
+            // If user was in a room, delete that room and send a 
+            // message to their opponent.
+            if (Object.values(rooms[key]).indexOf(socketID) > -1) {
+
+                // If user was host, clear guest info, if user was
+                // guest, promote to host.
+                if (socketID !== rooms[key]['hostID']) {
+                    console.log('user was hosting...')
+
+                    rooms[key]['guestID'] = null;
+                    rooms[key]['guestUser'] = null;
+
+                // User was not host, promote to host and clear guest.
+                } else {
+                    console.log('user was guest, promoting...')
+
+                    rooms[key]['hostID'] = rooms[key]['guestID'];
+                    rooms[key]['hostUser'] = rooms[key]['guestUser'];
+
+                    rooms[key]['guestID'] = null;
+                    rooms[key]['guestUser'] = null;
+                }
+
+                io.to(key).emit('opponent left', rooms[key]);
+                //delete rooms[key];
+
+                console.log('room deleted')
+            }
+        });
     });
 
     socket.on('new game', (key, state) => {

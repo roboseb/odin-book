@@ -34,10 +34,7 @@ const initialize = (() => {
 let hostSet = false;
 
 // Socket listener for getting opponent information
-socket.on('join room', (user, isHost, hostUser, guestUser, id) => {
-
-    console.log('hostSet: ' + hostSet);
-    console.log('isHost: ' + isHost);
+socket.on('join room', (user, isHost, hostUser, guestUser, id, roomObj) => {
 
     if (id === userID && isHost  && !hostSet)  {
         console.log('this user is hosting');
@@ -58,7 +55,7 @@ socket.on('join room', (user, isHost, hostUser, guestUser, id) => {
     let hostDice = hostUser ? hostUser.setDice : null;
     let guestDice = guestUser ? guestUser.setDice : null; 
 
-    console.log(hostDice, guestDice);
+    
 
     if (host) {
         generateDice(6, 'player', hostDice);
@@ -67,7 +64,37 @@ socket.on('join room', (user, isHost, hostUser, guestUser, id) => {
         generateDice(6, 'player', guestDice);
         generateDice(6, 'opponent', hostDice)
     }
+
+    console.log(roomObj);
+    console.log(socket.id);
+
+    updateUserDisplay(roomObj);
 });
+
+// Update displayed usernames with hosting info and names.
+const updateUserDisplay = (roomObj) => {
+    const opponentName = document.getElementById('opponent-username');
+    const playerHosting = document.getElementById('player-hosting');
+    const opponentHosting = document.getElementById('opponent-hosting');
+
+    // Set hosting label for player and opponent.
+    if (host) {
+        playerHosting.innerText = '(Host)';
+        opponentHosting.innerText = '(Guest)';
+    } else {
+        playerHosting.innerText = '(Guest)';
+        opponentHosting.innerText = '(Host)';
+    }
+
+    // Get opponent's username if opponent is signed in.
+    if (host && roomObj.guestUser) {
+        opponentName.innerText = roomObj.guestUser.username;
+    }
+
+    if (!host && roomObj.hostUser) {
+        opponentName.innerText = roomObj.hostUser.username;
+    }
+}
 
 // Receive socket info for starting new game.
 socket.on('new game', (newState) => {
@@ -189,6 +216,20 @@ socket.on('end turn', (newState, isHost) => {
     document.getElementById('hand-score').innerText = 0;
 
     setTurn(state.turn);
+});
+
+// Send a message to the current player if their opponent has left.
+socket.on('opponent left', (roomObj) => {
+    alert('Your opponent left!')
+
+    host = true;
+
+    const newGameButton = document.getElementById('new-game-btn');
+    newGameButton.removeAttribute('disabled');
+
+
+
+    updateUserDisplay(roomObj);
 });
 
 // Take state passed from opponent and take only relevant info.

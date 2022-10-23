@@ -76,6 +76,14 @@ October 21st, 2022
 
     Sure seems that I'm running into issues with testing multiplayer games with two users signed in from one machine. Basically whoever signs in last is sign in on both machines. This'll be a bitch to test.
 
+October 23rs, 2022
+
+    Everything is breaking. A few months ago, I got a free used pair of turtle beach headphones, that were in pretty good condition. They lasted about a month before the audio was so broken it was unlistenable, and the connection at the little volume slider was pretty busted. Went back to my old headset that I also got used with my laptop when I bought it, and it started being real finicky with how it wanted to be connected. Now I only have audio coming from one side. I bought a new buget mechanical keyboard a few months ago, and recently one letter key stopped working so I had to go back to a basic 10$ one I have. Hopefully I can get the manufacturer to send me a replacement, as someone on amazon said they did. Ordered a replacement pair of headphones for 30$, which should be here around friday. We'll see how long they last.
+
+    Welcome to the supposed last day. I think my plan is to get everything more or less working today, and then style the bitch tomorrow. This does give me less time to work on the last portfolio project, but I think I'll improving that as I job hunt next month anyway. Hoping to get it all done-ish by end of day friday, so that I can go chill at my Grandma's on the weekend and then get plastered at bars, hopefully in costume. Then do some trick-or-treating with the kids on Halloween.
+
+    Pretty sure I'm fixing the same issues here that I was working on on friday. Tested multiplayer with some friends yesterday, and it basically doesn't work. Also need to fix friending/setting dice updating immediately, and some other stuff if possible.
+
 
 ---To-Do---
 
@@ -116,3 +124,13 @@ DONE-fix straights
 -about section
 -remove sign-in values
 -fix hostUser/guestUser declarations to work with multiple sets of games running.
+-change current room display to make sense without being immediately connected
+
+-message for when connecting succesfully
+-disable new game button until two players in
+-setup object to hold room-specific host/guest users and clear them when disconnected.
+
+-combine roll all dice and keep hand btn
+-fix new game before both joined bug?
+-change layout for dice on user profile page
+-prevent duplicating room keys
