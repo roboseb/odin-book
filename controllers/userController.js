@@ -318,11 +318,12 @@ exports.die_set_post = (req, res, next) => {
             const dice = result.setDice
             dice[req.body.index] = JSON.parse(req.body.die);
 
-            User.findByIdAndUpdate(req.user._id, {setDice: dice}, function (err, res) {
+            User.findByIdAndUpdate(req.user._id, {setDice: dice}, function (err, response) {
                 if (err) {
                     console.log(err);
                 } else {
                     console.log("Die set");
+                    //res.render('index', {user: req.user})
                 }
             });
         }

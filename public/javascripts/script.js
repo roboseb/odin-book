@@ -286,7 +286,7 @@ let credits = 0;
 const dieBuyButton = document.getElementById('buy-die-btn');
 if (dieBuyButton) {
     dieBuyButton.addEventListener('click', () => {
-    
+
         // Prevent purchasing a die with no credits.
         if (credits < 1) {
             dieBuyButton.classList.remove('unafford', 'cranked');
@@ -294,17 +294,17 @@ if (dieBuyButton) {
             dieBuyButton.classList.add('unafford');
             return;
         }
-    
+
         credits--;
         const credDisplay = document.getElementById('gacha-credits');
         credDisplay.innerText = credits.toString().padStart(2, '0');
-    
-    
+
+
         lastDie = document.getElementById(`die-${generatedDice}`)
         lastDie.classList.add('stored');
-    
+
         const skins = ['skull', 'heart', 'panel', 'hedron']
-    
+
         const die = {
             pip: skins[Math.floor(Math.random() * skins.length)],
             inlay: skins[Math.floor(Math.random() * skins.length)],
@@ -312,20 +312,20 @@ if (dieBuyButton) {
             shine: false,
             pipped: Math.floor(Math.random() * 4) === 1
         }
-    
+
         // Add sparkle effect if die's parts all match.
         if (die.pip === die.inlay && die.pip === die.base) {
             die.shine = true;
         }
-    
-        generatedDice ++;
+
+        generatedDice++;
         generateBasicDie('gacha-spout', 'khaki', generatedDice, die);
-    
+
         dieBuyButton.classList.remove('cranked', 'unafford');
         void dieBuyButton.offsetHeight;
         dieBuyButton.classList.add('cranked');
-    
-        
+
+
         // If user is signed in, save die to their account, and deduct likes.
         const userInfo = document.getElementById('user-info');
         let user = userInfo.getAttribute('user');
@@ -344,7 +344,7 @@ if (slot) {
         slot.classList.remove('coined');
         void slot.offsetHeight;
         slot.classList.add('coined');
-    
+
         credits++;
         const credDisplay = document.getElementById('gacha-credits');
         credDisplay.innerText = credits.toString().padStart(2, '0');
@@ -352,21 +352,23 @@ if (slot) {
 }
 
 const setDieButtons = Array.from(document.querySelectorAll('.set-die-btn'));
-setDieButtons.forEach(die => {
-    die.addEventListener('click', () => {
-        const index = parseInt(die.id.slice(-5, -4));
+setDieButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const index = parseInt(button.id.slice(-5, -4));
 
         const userInfo = document.getElementById('user-info');
         let user = JSON.parse(userInfo.getAttribute('user'));
 
         let dieUsed = false;
 
-        Object.keys(user.setDice).forEach(slot => {
+        const targetDie = document.querySelector(`.scroller-${dieIndex}`)
+        const dieObj = targetDie.getAttribute('die');
 
+        Object.keys(user.setDice).forEach(slot => {
             if (user.setDice[slot] !== null && user.setDice[slot]._id ===
-                JSON.parse(die.getAttribute('die'))._id) {
-                    dieUsed = true;
-                }
+                JSON.parse(dieObj)._id) {
+                dieUsed = true;
+            }
         });
 
         if (dieUsed) {
@@ -374,11 +376,62 @@ setDieButtons.forEach(die => {
             return;
         }
 
-        if (user.setDice[index] !== null) {
-            console.log('This slot is being used!');
-            return;
-        }
-
-        sendData({die: die.getAttribute('die'), index: index}, '/dice/set')
+        sendData({ die: dieObj, index: index }, '/dice/set')
     });
 });
+
+// Add event listeners to buttons for cycling through user's dice.
+let dieIndex = 0;
+
+const lastDieButton = document.getElementById('last-die-btn');
+lastDieButton.addEventListener('click', () => {
+    dieIndex--;
+    updateScroller();
+});
+
+const nextDieButton = document.getElementById('next-die-btn');
+nextDieButton.addEventListener('click', () => {
+    dieIndex++;
+    updateScroller();
+});
+
+// Cycle through a user's dice on their profile page.
+const updateScroller = () => {
+    // Count all dice in scroller to see max position.
+    const scrollers = Array.from(document.querySelectorAll('.scroller'));
+    const scrollLength = scrollers.length;
+
+    if (dieIndex > scrollLength - 1) dieIndex = scrollLength - 1;
+    if (dieIndex < 0) dieIndex = 0;
+
+    const targetDie = document.querySelector(`.scroller-${dieIndex}`)
+
+    scrollers.forEach(die => {
+        die.classList.remove('shown');
+    });
+
+    targetDie.classList.add('shown');
+
+    const die = JSON.parse(targetDie.getAttribute('die'));
+
+    // Update die details in detail panel.
+    const pips = document.getElementById('pips-name');
+    const base = document.getElementById('base-name');
+    const inlay = document.getElementById('inlay-name');
+
+    pips.innerText = die.pip;
+    base.innerText = die.base;
+    inlay.innerText = die.inlay;
+
+    const pippedInfo = document.getElementById('pipped-info');
+    const shineInfo = document.getElementById('shine-info');
+
+    shineInfo.innerText = die.shine ? 'Shiny!' : 'Not shiny';
+    pippedInfo.innerText = die.pipped ? 'Pipped!' : 'Not pipped';
+    
+
+    console.log(JSON.parse(targetDie.getAttribute('die')));
+}
+
+// Setup initial die details.
+updateScroller();

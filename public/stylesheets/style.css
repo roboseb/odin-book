@@ -720,7 +720,13 @@ a {
     100% {transform: translate(-50%, -50%) scale(1);}
 }
 
-#user-dice, #equipped-dice {
+#equipped-dice-panel, #dice-panel {
+    overflow: hidden;
+}
+
+#equipped-dice {
+    box-sizing: border-box;
+
     height: 100%;
     width: 100%;
     padding: 20px;
@@ -737,8 +743,45 @@ a {
     transform-style: preserve-3d;
 }
 
-#user-dice>.die:hover, #equipped-dice>.die:hover {
+#user-dice {
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#user-dice .die:hover, #equipped-dice>.die:hover {
     transform: translateZ(200px) translateY(0px) rotateX(45deg) rotateZ(45deg);
+}
+
+#dice-preview .die {
+    display: none;
+}
+
+#dice-preview .shown {
+    display: block;
+}
+
+#dice-info-preview {
+    display: flex;
+    justify-content: space-between;
+
+    background-color: red;
+}
+
+#dice-extras {
+    display: flex;
+
+    justify-content: space-between;
+}
+
+#die-card-options {
+    display: grid;
+    grid-template-columns: auto auto auto;
 }
 
 .die-card {
@@ -766,7 +809,4 @@ a {
     pointer-events: all;
 }
 
-.die-card-options {
-    display: flex;
-    flex-direction: column;
-}
+

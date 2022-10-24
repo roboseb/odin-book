@@ -1,7 +1,7 @@
-mixin die(color, pip, base, inlay, shine, pipped, die, preview_name, user_name)
+mixin die(color, pip, base, inlay, shine, pipped, die, preview_name, user_name, user, index)
     include die-card
 
-    .cube#die-1.die
+    .cube#die-1.die(class=`${index !== undefined ? `scroller-${index} scroller ${index === 0 ? 'shown' : ''}` : ''}` die=`${JSON.stringify(die)}`)
 
         - var pipCounts = [1, 2, 3, 4, 5, 6]
             
@@ -27,11 +27,11 @@ mixin die(color, pip, base, inlay, shine, pipped, die, preview_name, user_name)
 
 
 
-            if user_name === preview_name
-                +die-card(die)
+            //- if user_name === preview_name
+            //-     +die-card(die)
 
 
-        - var n = 0;
-        while n < 8
-            - n++  
-            .cube__face.cube__cover(class=`cube__cover--${n}` style=`background-color: ${color}`)
+        //- - var n = 0;
+        //- while n < 8
+        //-     - n++  
+        //-     .cube__face.cube__cover(class=`cube__cover--${n}` style=`background-color: ${color}`)

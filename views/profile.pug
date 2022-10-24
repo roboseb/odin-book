@@ -66,10 +66,36 @@ block content
         #dice-panel.panel 
             .panel-header Dice
             
-            #user-dice            
-                for die in user_preview.dice
+            #user-dice
+                #dice-info-preview
+                    #dice-info 
+                        div Pips #[span#pips-name]
+                        div Base #[span#base-name]
+                        div Inlay #[span#inlay-name]
 
-                    +die('khaki', die.pip, die.base, die.inlay, die.shine, die.pipped, die, user_preview.username, user ? user.username : null, user_preview)
+
+                    #dice-preview 
+                        for die, index in user_preview.dice
+                            +die('khaki', die.pip, die.base, die.inlay, die.shine, die.pipped, die, user_preview.username, user ? user.username : null, user_preview, index)
+                        button#last-die-btn Back
+                        button#next-die-btn Next
+
+
+
+                #dice-extras
+                    #pipped-info Pipped! 
+                    #shine-info Shiny!
+                
+                if user && user.username === user_preview.username
+                    #die-card-options 
+                        button.set-die-btn#set-1-btn(die=`${JSON.stringify('die')}`) Set as 1st die 
+                        button.set-die-btn#set-2-btn(die=`${JSON.stringify('die')}`) Set as 2nd die 
+                        button.set-die-btn#set-3-btn(die=`${JSON.stringify('die')}`) Set as 3rd die 
+                        button.set-die-btn#set-4-btn(die=`${JSON.stringify('die')}`) Set as 4th die 
+                        button.set-die-btn#set-5-btn(die=`${JSON.stringify('die')}`) Set as 5th die 
+                        button.set-die-btn#set-6-btn(die=`${JSON.stringify('die')}`) Set as 6th die
+
+
         #equipped-dice-panel.panel
             .panel-header Equipped Dice
             
@@ -79,21 +105,6 @@ block content
                         - var die = user_preview.setDice[key]
 
                         +die('khaki', die.pip, die.base, die.inlay, die.shine, die.pipped, die, user_preview.username, user ? user.username : null, user_preview)
-
-        //- #profile-panel.panel
-        //-     .panel-header Cards
-
-        //- #dice-panel.panel.collapsed
-        //-     .panel-header Cosmetics
- 
-        //- #users-panel.panel 
-        //-     .panel-header Users
-
-        //-     #user-list 
-        //-         //- each user in user_list 
-        //-         //-     .user-list-username.username= user.username
-        //-         //-         +user-card(user)
-
 
 
     script(src='/javascripts/script.js')

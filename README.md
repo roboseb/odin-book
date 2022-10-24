@@ -84,6 +84,8 @@ October 23rs, 2022
 
     Pretty sure I'm fixing the same issues here that I was working on on friday. Tested multiplayer with some friends yesterday, and it basically doesn't work. Also need to fix friending/setting dice updating immediately, and some other stuff if possible.
 
+    I think I actually fixed the bug with game joining, and even added a little hosting indicator to make things more obvious for players.
+
 
 ---To-Do---
 
