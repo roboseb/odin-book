@@ -120,11 +120,12 @@ exports.post_unlike_post = (req, res, next) => {
 
         // Add current user to comment's likes.
         remove_user_from_likes(callback) {
-            Post.findOneAndUpdate({ _id: req.body.id }, { $pull: { likedUsers: req.user } },
+            Post.findOneAndUpdate({ _id: req.body.id }, { $pull: { likedUsers: {username: req.user.username} } },
                 callback);
         },
     },
         (err, results) => {
+            console.log(results.remove_user_from_likes);
             if (err) return next(err);
 
             // Remove one like from comment's poster.

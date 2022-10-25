@@ -49,56 +49,70 @@ exports.user_create_post = [
             }
         );
 
-        if (!errors.isEmpty()) {
-            // There are errors. Render form again with sanitized values/errors messages.
+        User.find({ username: req.body.username }, (err, result) => {
+            console.log('results of user search:');
+            if (result.length) {
+                console.log(result)
+                res.render('sign-up', { title: 'Sign Up', user: tempUser, errors: [{msg: 'Username is not available.'}], sheet: 'sign-up' });
+                console.log('user already in system...')
+                return;
+            } else {
+                console.log('creating user...')
 
-            res.render('sign-up', { title: 'Sign Up', user: tempUser, errors: errors.array(), sheet: 'sign-up' });
-            return;
-        } else {
-            // Data from form is valid.
+                if (!errors.isEmpty()) {
+                    // There are errors. Render form again with sanitized values/errors messages.
 
-            // Encrypt password with bcrypt.
-            bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
-                if (err) {
-                    // Error in hashing password. Rerender with data and error.
-                    res.render('sign-up', { title: 'Sign Up', user: tempUser, errors: [err] });
+                    res.render('sign-up', { title: 'Sign Up', user: tempUser, errors: errors.array(), sheet: 'sign-up' });
+                    return;
                 } else {
-                    // Create Author object with escaped/trimmed/encrypted data.
+                    // Data from form is valid.
 
-                    var user = new User(
-                        {
-                            username: req.body.username,
-                            password: hashedPassword,
-                            admin: false,
-                            pic: req.body.pic,
-                            dice: [],
-                            setDice: {
-                                1: null,
-                                2: null,
-                                3: null,
-                                4: null,
-                                5: null,
-                                6: null
-                            },
-                            cards: [],
-                            cosmetics: [],
-                            joinDate: new Date(),
-                            likes: 0,
-                            friends: [],
-                            outgoingRequests: [],
-                            incomingRequests: []
+                    // Encrypt password with bcrypt.
+                    bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
+                        if (err) {
+                            // Error in hashing password. Rerender with data and error.
+                            res.render('sign-up', { title: 'Sign Up', user: tempUser, errors: [err] });
+                        } else {
+                            // Create Author object with escaped/trimmed/encrypted data.
+
+                            var user = new User(
+                                {
+                                    username: req.body.username,
+                                    password: hashedPassword,
+                                    admin: false,
+                                    pic: req.body.pic,
+                                    dice: [],
+                                    setDice: {
+                                        1: null,
+                                        2: null,
+                                        3: null,
+                                        4: null,
+                                        5: null,
+                                        6: null
+                                    },
+                                    cards: [],
+                                    cosmetics: [],
+                                    joinDate: new Date(),
+                                    likes: 0,
+                                    friends: [],
+                                    outgoingRequests: [],
+                                    incomingRequests: []
+                                }
+                            );
+
+                            // Save user.
+                            user.save(function (err) {
+                                if (err) { return next(err); }
+                                // Successful - redirect to home page.
+                                res.redirect('/');
+                            });
                         }
-                    );
-
-                    // Save user.
-                    user.save(function (err) {
-                        if (err) { return next(err); }
-                        // Successful - redirect to home page.
-                        res.redirect('/');
                     });
                 }
-            });
-        }
+            }
+        });
+
+
     }
 ];
 
@@ -267,7 +281,7 @@ exports.user_profile_get = (req, res, next) => {
                 user: req.user,
                 user_preview: results.user,
                 sheet: 'profile'
-            })
+            });
         });
 };
 
@@ -307,9 +321,6 @@ exports.die_add_post = (req, res, next) => {
 // Set a die to a specific position in the user's favourite dice.
 exports.die_set_post = (req, res, next) => {
     console.log('setting a die...');
-    console.log(req.user._id);
-    console.log(req.body.index);
-    console.log(req.body.die);
 
     User.findById(req.user._id, function (err, result) {
         if (err) {
@@ -318,12 +329,35 @@ exports.die_set_post = (req, res, next) => {
             const dice = result.setDice
             dice[req.body.index] = JSON.parse(req.body.die);
 
-            User.findByIdAndUpdate(req.user._id, {setDice: dice}, function (err, response) {
+            User.findByIdAndUpdate(req.user._id, { setDice: dice }, function (err, response) {
                 if (err) {
                     console.log(err);
                 } else {
                     console.log("Die set");
-                    //res.render('index', {user: req.user})
+                    res.send('Die set!')
+                }
+            });
+        }
+    });
+}
+
+// Remove a die from a user's equipped dice..
+exports.die_unequip_post = (req, res, next) => {
+    console.log('unequipping a die...');
+
+    User.findById(req.user._id, function (err, result) {
+        if (err) {
+            console.log(err);
+        } else {
+            const dice = result.setDice
+            dice[req.body.key] = null;
+
+            User.findByIdAndUpdate(req.user._id, { setDice: dice }, function (err, response) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Die unequipped!");
+                    res.send('Die unequipped!')
                 }
             });
         }

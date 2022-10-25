@@ -1,3 +1,15 @@
+:root {
+    --russian: #23022E;
+    --silver: #ADA8B6;
+    --spanish: #45236d;
+    --deep-spanish: #2a0e47;
+    --cerise: #D0E3C4;
+    --cerise2: rgb(124, 22, 47);
+
+    --panel-height: 50px;
+}
+
+
 #dice-panels {
     height: 100%;
 
@@ -5,10 +17,6 @@
     flex-direction: column;
     gap: 10px;
 
-    /* perspective: 2000px;
-    perspective-origin: 50% 50%; */
-
-    transform-style: preserve-3d;
 
     position: relative;
     z-index: 1;
@@ -19,36 +27,39 @@
 }
 
 #dice-box {
+    box-sizing: border-box;
     height: 100%;
     width: 100%;
 
-    background-color: rgb(0, 238, 255);
+    background-color: rgba(0, 238, 255, 0);
+    padding: 40px;
 
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+
+    transform-style: preserve-3d;
 }
-
 #player-box, #opponent-box {
-    background-color: rgba(255, 0, 0, 0.329);
-    flex-grow: 1;
+    background-color: rgba(255, 0, 0, 0);
     display: flex;
     flex-direction: column;
-
-    perspective: 2000px;
-    perspective-origin: 50% 50%;
 
     filter: brightness(0.6);
     transition: all 0.1s;
     pointer-events: none;
+
+    transform-style: preserve-3d;
 }
 
 #opponent-box {
-    background-color: rgba(126, 252, 0, 0.486);
+    background-color: rgba(126, 252, 0, 0);
 }
 
 #player-box {
-    flex-direction: column-reverse;
-    
+    flex-direction: column-reverse;   
 }
 
 #player-box.current-turn, #opponent-box.current-turn {
@@ -62,27 +73,17 @@
     justify-content: center;
     gap: 10px;
 
-    background-color: lightcoral;
+    background-color: rgba(240, 128, 128, 0);
 
+    transform-style: preserve-3d;
     perspective: 2000px;
     perspective-origin: 50% 50%;
+
+    /* transform: rotateX(45deg) rotateY(0deg); */
 }
 
 #player-dice {
     flex-wrap: wrap-reverse;
-}
-
-.scene {
-    position: relative;
-    transform-style: preserve-3d;
-    transform-origin: center;
-
-    height: 100%;
-    width: 100%;
-
-    transition: all 0.5s;
-
-    background-color: pink;
 }
 
 .cube {
@@ -528,19 +529,19 @@
 
 }
 
-#hand-score {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 3;
-
+#hand-score-box {
     font-size: 4rem;
-}
 
-#score-board {
-    display: grid;
-    grid-template-columns: auto auto;
+    background-color: var(--cerise);
+    color: black;
+    min-height: 5rem;
+    min-width: 10rem;
+
+    border-radius: 15px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #lobby-box {
@@ -588,4 +589,86 @@
     width: 100%;
 
     pointer-events: none;
+}
+
+#player-dice.winning .die, #opponent-dice.winning .die {
+    animation: winani 1s infinite;
+}
+
+@keyframes winani {
+    0% {transform: translateZ(50px) rotateX(360deg) rotateY(360deg);}
+    50% {transform: translateZ(200px) rotateX(360deg) rotateY(360deg);}
+    100% {transform: translateZ(50px) rotateX(360deg) rotateY(360deg);}
+}
+
+#dice-btns-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#new-game-btn {
+    flex-grow: 0.25;
+    background-color: #832719;
+    color: var(--cerise);
+    border: none;
+
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.5rem;
+
+    transition: all 0.2s;
+}
+
+#new-game-btn:hover {
+    background-color: var(--spanish);
+}
+
+#score-board {
+    flex-grow: 1;
+
+    display: grid;
+    grid-template-columns: auto auto;
+
+    background-color: rgba(255, 0, 0, 0);
+}
+
+#dice-btn-box {
+    flex-grow: 2;
+
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 10px;
+}
+
+#dice-btn-box>button {
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+
+    font-size: 1.5rem;
+    transition: all 0.2s, transform 0s, border-radius 0s;
+}
+
+#dice-btn-box>button:hover {
+    background-color: var(--spanish);
+    color: var(--cerise);
+}
+
+#dice-btn-box>button:active {
+    transform: scale(0.9);
+    border-radius: 0px;
+}
+
+#keep-hand-btn {
+    grid-column: span 2;
+    background-color: #ADC698;
+}
+
+#roll-dice-btn {
+    background-color: var(--cerise);
+}
+
+#end-turn-btn {
+    background-color: #C05746;
 }

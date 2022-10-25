@@ -86,21 +86,26 @@ October 23rs, 2022
 
     I think I actually fixed the bug with game joining, and even added a little hosting indicator to make things more obvious for players.
 
+October 24th, 2022
+
+    I'm hoping I can get all the basic stuff working today and worry about styling later, so that I can move on to the other shit at the end of TOP. Not sure why my brain is so obsessed with finishing this week when I'm gonna have to come back to this and my next portfolio next month, while I'm sending out job applications anyway. Whatever, it'll feel real good if I do.
+
+    I slept alright, but for some reason I feel like absolute dogshit today. Also, my headphones completely stopped working in both ears, so I'm stuck to bluetooth earbud nonsense until my Amazon order shows up. Despite these setbacks, I actually managed to get both die equipping and post liking working as intended, which I have been struggling with for quite a while now. 
 
 ---To-Do---
 
 DONE-user authentication
 DONE-sign in with facebook
--change session secret
+DONE-change session secret
 DONE-fix collapsed panel gap
--prevent signing up with same username
+DONE-prevent signing up with same username
 -finalize by cleaning up code
 DONE-like button (only able to like others' posts + only one like?)
 DONE-standalone profile page
--fix friend accepting not refreshing
+DONE-fix friend accepting not refreshing
 DONE-unlike posts on click
 -cancel friend request
--fix double friending?
+DONE-fix double friending?
 -replace localhost references
 -update site callback on facebook dev page
 DONE-sort post feed by date (combined user posts sorting)
@@ -120,19 +125,23 @@ DONE-fix straights
 -wager likes in multiplayer?
 -fix friends 500 error and pages not updating friend info immediately after change
 -delete all old posts
--add custom dice to multiplayer
--add ability to unset custom dice
+DONE-add custom dice to multiplayer
+DONE-add ability to unset custom dice
 -how to play section
 -about section
 -remove sign-in values
--fix hostUser/guestUser declarations to work with multiple sets of games running.
+DONE-fix hostUser/guestUser declarations to work with multiple sets of games running.
 -change current room display to make sense without being immediately connected
 
--message for when connecting succesfully
+DONE-message for when connecting succesfully
 -disable new game button until two players in
--setup object to hold room-specific host/guest users and clear them when disconnected.
+DONE-setup object to hold room-specific host/guest users and clear them when disconnected.
 
 -combine roll all dice and keep hand btn
 -fix new game before both joined bug?
--change layout for dice on user profile page
+DONE-change layout for dice on user profile page
 -prevent duplicating room keys
+-fix random errors in console
+-favicon
+-update titles
+-mobile layout

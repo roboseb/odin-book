@@ -3,10 +3,10 @@
     --silver: #ADA8B6;
     --spanish: #45236d;
     --deep-spanish: #2a0e47;
-    --cerise: #d65676;
+    --cerise: #D0E3C4;
     --cerise2: rgb(124, 22, 47);
 
-    --panel-height: 40px;
+    --panel-height: 50px;
 }
 
 body {
@@ -19,7 +19,7 @@ body {
     flex-direction: column;
     font-family: sans-serif;
 
-    color: white;
+    color: var(--cerise);
 }
 
 h1, h2 {
@@ -67,7 +67,7 @@ a {
     background-color: var(--russian);
     position: relative;
 
-    min-height: var(--panel-height);
+    min-height: calc(var(--panel-height) - 10px);
     border-radius: 15px 15px 0px 0px;
     padding: var(--panel-height) 10px 10px 10px;
 
@@ -123,10 +123,9 @@ a {
 
     background-color: var(--cerise);
     color: black;
-    padding: 5px 0px;
+    padding: 10px 5px;
     width: 100%;
     border-radius: 15px 15px 0px 0px;
-    border: 5px solid var(--russian);
 
     position: absolute;
     top: 0;
@@ -137,7 +136,7 @@ a {
 }
 
 .panel-header:hover {
-    background-color: var(--cerise2);
+    background-color: var(--russian);
     color: white;
 }
 
@@ -721,7 +720,7 @@ a {
 }
 
 #equipped-dice-panel, #dice-panel {
-    overflow: hidden;
+    overflow: visible;
 }
 
 #equipped-dice {
@@ -809,4 +808,26 @@ a {
     pointer-events: all;
 }
 
+.equipped-index {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 3rem;
 
+    color: black;
+
+    background-color: rgba(255, 255, 255, 0.623);
+    padding: 2px 10px;
+}
+
+.unequip-btn {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: 1rem;
+
+    color: white;
+
+    background-color: rgb(49, 49, 49);
+    padding: 2px 10px;
+}

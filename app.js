@@ -78,11 +78,23 @@ passport.use(
 );
 
 passport.serializeUser(function (user, done) {
+    console.log('serializing');
     done(null, user);
 });
 
+// Update the user object with DB info when deserializing.
 passport.deserializeUser(function (obj, done) {
-    done(null, obj);
+    console.log('deserializing');
+    
+    let newObj;
+    User.findOne({ username: obj.username }, (err, user) => {
+        if (err) {
+            return done(err);
+        } else {
+            newObj = user;
+            done(null, newObj);
+        }
+    });
 });
 
 passport.use(
@@ -128,7 +140,7 @@ passport.use(
     )
 );
 
-app.use(session({ secret: "cats", resave: false, saveUninitialized: true }));
+app.use(session({ secret: "4QTPTCLKHR", resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));

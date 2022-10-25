@@ -795,7 +795,7 @@ const checkHandValidity = () => {
 
 // Check for a win after passing turn, and allow one more turn if true.
 const checkForWin = () => {
-    if (state.player.score >= 1000 || state.opponent.score >= 1000) {
+    if (state.player.score >= 50 || state.opponent.score >= 50) {
         state.lastTurn = true;
         sendModal('Last turn!')
     }
@@ -889,9 +889,11 @@ const endTurn = (bust) => {
         if (state['opponent']['score'] > state['player']['score']) {
             sendModal('Opponent has won!')
             console.log('Opponent has won!')
+            animateWin('opponent');
         } else if (state['player']['score'] > state['opponent']['score']) {
             sendModal('Player has won!')
             console.log('player has won!')
+            animateWin('player');
         } else {
             sendModal("It's a tie!")
         }
@@ -953,6 +955,8 @@ const resetGame = (player) => {
     playerScore.innerText = 0;
     opponentScore.innerText = 0;
     handScore.innerText = 0;
+
+    clearWinAnimation();
 
     sendModal('New game started');
 }
@@ -1027,4 +1031,29 @@ const clearDice = () => {
 
     state.player.dice = {};
     state.opponent.dice = {};
+}
+
+// Animate the dice of the winning player.
+const animateWin = (player) => {
+    const box = document.getElementById(`${player}-dice`);
+    box.classList.add('winning');
+
+    const dice = Array.from(box.querySelectorAll('.die'));
+    dice.forEach((die, index) => {
+        die.style.animationDelay = `${100 * index}ms`; 
+    });
+}
+
+const clearWinAnimation = () => {
+    let players = ['player', 'opponent'];
+    players.forEach(player => {
+        const box = document.getElementById(`${player}-dice`);
+        box.classList.remove('winning');
+    
+        const dice = Array.from(box.querySelectorAll('.die'));
+        dice.forEach((die, index) => {
+            void die.offsetHeight;
+            die.style.animationDelay = null; 
+        });
+    });
 }

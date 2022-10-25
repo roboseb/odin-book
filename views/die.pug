@@ -1,7 +1,7 @@
-mixin die(color, pip, base, inlay, shine, pipped, die, preview_name, user_name, user, index)
+mixin die(color, pip, base, inlay, shine, pipped, die, preview_name, user_name, user, index, key)
     include die-card
 
-    .cube#die-1.die(class=`${index !== undefined ? `scroller-${index} scroller ${index === 0 ? 'shown' : ''}` : ''}` die=`${JSON.stringify(die)}`)
+    .cube#die-1.die(class=`${index !== undefined ? `scroller-${index} scroller ${index === 0 ? 'shown' : ''}` : ''}` die=`${JSON.stringify(die)}` index=`${key}`)
 
         - var pipCounts = [1, 2, 3, 4, 5, 6]
             
@@ -24,6 +24,11 @@ mixin die(color, pip, base, inlay, shine, pipped, die, preview_name, user_name, 
                 
                 if shine 
                     .shine
+
+                if key && count === 1
+                    - console.log(key);
+                    .equipped-index= key
+                    button.unequip-btn(key=`${key}`) Unequip
 
 
 

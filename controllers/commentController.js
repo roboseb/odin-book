@@ -112,7 +112,7 @@ exports.comment_unlike_post = (req, res, next) => {
 
         // Add current user to comment's likes.
         remove_from_user_likes(callback) {
-            Comment.findOneAndUpdate({ _id: req.body.id }, { $pull: { likedUsers: req.user } },
+            Comment.findOneAndUpdate({ _id: req.body.id }, { $pull: { likedUsers: {username: req.user.username} } },
                 callback);
         },
     },

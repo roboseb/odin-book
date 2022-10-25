@@ -94,8 +94,8 @@ block content
                         button.set-die-btn#set-4-btn(die=`${JSON.stringify('die')}`) Set as 4th die 
                         button.set-die-btn#set-5-btn(die=`${JSON.stringify('die')}`) Set as 5th die 
                         button.set-die-btn#set-6-btn(die=`${JSON.stringify('die')}`) Set as 6th die
-
-
+            #modal
+                #modal-message
         #equipped-dice-panel.panel
             .panel-header Equipped Dice
             
@@ -104,7 +104,7 @@ block content
                     if user_preview.setDice[key] !== null
                         - var die = user_preview.setDice[key]
 
-                        +die('khaki', die.pip, die.base, die.inlay, die.shine, die.pipped, die, user_preview.username, user ? user.username : null, user_preview)
-
+                        +die('khaki', die.pip, die.base, die.inlay, die.shine, die.pipped, die, user_preview.username, user ? user.username : null, user_preview, undefined, key)
+                            
 
     script(src='/javascripts/script.js')

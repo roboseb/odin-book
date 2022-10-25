@@ -203,6 +203,24 @@ const sendData = (data, action) => {
 
     // Send our FormData object; HTTP headers are set automatically
     XHR.send(FD);
+
+    XHR.addEventListener('load', () => {
+        console.log('request complete')
+    })
+
+    // Refresh the page once the DB data is updated.
+    XHR.onreadystatechange = () => {
+
+        // Prevent reloading page when like or unliking something.
+        if (action === '/posts/like' || action === '/posts/unlike' ||
+            action === '/comments/like' || action === '/comments/unlike') {
+                return;
+            }
+
+        if (XHR.readyState == XMLHttpRequest.DONE) {
+            window.location.reload();
+        }
+    }
 }
 
 // Create a single die.
@@ -332,7 +350,6 @@ if (dieBuyButton) {
         if (user !== '') {
             user = JSON.parse(user);
             sendData({ user: user, die: JSON.stringify(die) }, '/dice/add');
-            console.log(user);
         }
     });
 }
@@ -372,28 +389,34 @@ setDieButtons.forEach(button => {
         });
 
         if (dieUsed) {
-            console.log('This die is being used!');
+            showModal('That die is already being used!')
             return;
         }
 
-        sendData({ die: dieObj, index: index }, '/dice/set')
+        sendData({ die: dieObj, index: index }, '/dice/set');
     });
 });
 
 // Add event listeners to buttons for cycling through user's dice.
 let dieIndex = 0;
 
+// Cycle backwards through a user's dice.
 const lastDieButton = document.getElementById('last-die-btn');
-lastDieButton.addEventListener('click', () => {
-    dieIndex--;
-    updateScroller();
-});
+if (lastDieButton) {
+    lastDieButton.addEventListener('click', () => {
+        dieIndex--;
+        updateScroller();
+    });
+}
 
+// Cycle forwards through a user's dice.
 const nextDieButton = document.getElementById('next-die-btn');
-nextDieButton.addEventListener('click', () => {
-    dieIndex++;
-    updateScroller();
-});
+if (nextDieButton) {
+    nextDieButton.addEventListener('click', () => {
+        dieIndex++;
+        updateScroller();
+    });
+}
 
 // Cycle through a user's dice on their profile page.
 const updateScroller = () => {
@@ -428,10 +451,37 @@ const updateScroller = () => {
 
     shineInfo.innerText = die.shine ? 'Shiny!' : 'Not shiny';
     pippedInfo.innerText = die.pipped ? 'Pipped!' : 'Not pipped';
-    
+
 
     console.log(JSON.parse(targetDie.getAttribute('die')));
 }
 
 // Setup initial die details.
 updateScroller();
+
+// Display a Modal message.
+let modalT;
+const showModal = (message) => {
+    clearTimeout(modalT);
+
+    const modal = document.getElementById('modal-message');
+    modal.innerText = message;
+    modal.parentElement.classList.remove('shown');
+    void modal.parentElement.offsetHeight;
+    modal.parentElement.classList.add('shown');
+
+    modalT = setTimeout(() => {
+        modal.parentElement.classList.remove('shown');
+    }, 2000);
+}
+
+// Add event listeners to buttons for unequiping dice.
+const unequipButtons = Array.from(document.querySelectorAll('.unequip-btn'));
+if (unequipButtons) {
+    unequipButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            console.log(button.getAttribute('key'));
+            sendData({key: button.getAttribute('key')}, '/dice/unequip');
+        }); 
+    });
+}

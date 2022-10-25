@@ -8,15 +8,15 @@ block content
         #modal 
             #modal-message Hey, this is a message.
 
-        #hand-score
-
-
-
         #dice-panel.panel
             .panel-header Play Saiko Kismet
             #dice-box.scene
                 #opponent-box 
                     #opponent-dice
+
+                #hand-score-box
+                    #hand-score 0
+
                 #player-box 
                     #player-dice
 
@@ -25,13 +25,15 @@ block content
 
 
     #side-panels
-
-
-        #friends-panel.panel 
+        #message-panel.panel
+            .panel-header Messages 
+            <ul id="messages"></ul>
+            <form id="form" action="">
+                <input id="input" autocomplete="off" /><button>Send</button>
+            </form>
+            
+        #dice-btns-panel.panel 
             .panel-header Dice
-            button#keep-hand-btn Next Hand
-            button#roll-dice-btn Roll All Dice
-            button#end-turn-btn End Turn
             button#new-game-btn New Game
 
             #score-board    
@@ -40,23 +42,13 @@ block content
                 #player-score 0
                 #opponent-score 0
 
-        #message-panel.panel
-            .panel-header Messages 
-            <ul id="messages"></ul>
-            <form id="form" action="">
-                <input id="input" autocomplete="off" /><button>Send</button>
-            </form>
+            #dice-btn-box 
+                
+                button#roll-dice-btn Roll All Dice
+                button#end-turn-btn End Turn
+                button#keep-hand-btn Next Hand
 
-        #dice-panel.panel.collapsed
-            .panel-header Cosmetics
 
-        #users-panel.panel 
-            .panel-header Users
-
-            #user-list 
-                //- each user in user_list 
-                //-     .user-list-username.username= user.username
-                //-         +user-card(user)
 
 
 
